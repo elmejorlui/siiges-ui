@@ -10,7 +10,7 @@ export default function getAsignaturas(programaId) {
 
   useEffect(() => {
     if (session !== undefined) {
-      fetch(`http://localhost:3000/api/v1/asignaturas/${programaId}`, {
+      fetch(`http://localhost:3000/api/v1/asignaturas/programas/${programaId}`, {
         headers: {
           method: 'GET',
           api_key: apikey,
@@ -23,7 +23,6 @@ export default function getAsignaturas(programaId) {
             asignaturasData = data.data;
           }
           setAsignaturas(asignaturasData);
-          console.log(asignaturas);
         });
       setLoading(false);
     }

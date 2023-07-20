@@ -28,10 +28,26 @@ export default function DocentesCreateModal({ open, hideModal, title }) {
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
-    setFormDocentes((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+
+    if (['nombre', 'apellidoPaterno', 'apellidoMaterno'].includes(name)) {
+      setFormDocentes((prevData) => ({
+        ...prevData,
+        persona: {
+          ...prevData.persona,
+          [name]: value,
+        },
+      }));
+    } else if (name === 'asignaturasDocentes') {
+      setFormDocentes((prevData) => ({
+        ...prevData,
+        asignaturasDocentes: [...prevData.asignaturasDocentes, value],
+      }));
+    } else {
+      setFormDocentes((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
   const errorsDocentes = errorDatosDocentes(formDocentes, setError);
@@ -251,11 +267,12 @@ export default function DocentesCreateModal({ open, hideModal, title }) {
           <Grid item xs={12}>
             <BasicSelect
               title="Asignaturas para las que se propone"
-              name="asignaturasPropuesta"
+              name="asignaturasDocentes"
               options={asignaturas.asignaturas}
               onchange={handleOnChange}
               onblur={handleOnBlur}
-              errorMessage={error.asignaturasPropuesta}
+              errorMessage={error.asignaturasDocentes}
+              multiple
               required
             />
           </Grid>
@@ -267,7 +284,6 @@ export default function DocentesCreateModal({ open, hideModal, title }) {
               onchange={handleOnChange}
               onblur={handleOnBlur}
               errorMessage={error.tipoContratacion}
-              textValue
               required
             />
           </Grid>

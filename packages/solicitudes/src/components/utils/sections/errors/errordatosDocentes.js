@@ -12,7 +12,7 @@ export default function errorDatosDocentes(form, setError) {
       return true;
     },
     nombre: () => {
-      if (form.nombre === undefined || form.nombre === '') {
+      if (form.persona?.nombre === undefined || form.persona?.nombre === '') {
         setError((prevError) => ({ ...prevError, nombre: 'Nombre invalido' }));
         return false;
       }
@@ -20,7 +20,7 @@ export default function errorDatosDocentes(form, setError) {
       return true;
     },
     apellidoPaterno: () => {
-      if (form.apellidoPaterno === undefined || form.apellidoPaterno === '') {
+      if (form.persona?.apellidoPaterno === undefined || form.persona?.apellidoPaterno === '') {
         setError((prevError) => ({
           ...prevError,
           apellidoPaterno: 'Apellido paterno invalido',
@@ -31,7 +31,7 @@ export default function errorDatosDocentes(form, setError) {
       return true;
     },
     apellidoMaterno: () => {
-      if (form.apellidoMaterno === undefined || form.apellidoMaterno === '') {
+      if (form.persona?.apellidoMaterno === undefined || form.persona?.apellidoMaterno === '') {
         setError((prevError) => ({
           ...prevError,
           apellidoMaterno: 'Apellido materno invalido',
@@ -128,25 +128,28 @@ export default function errorDatosDocentes(form, setError) {
       }));
       return true;
     },
-    asignaturasPropuesta: () => {
+    asignaturasDocentes: () => {
       if (
-        form.asignaturasPropuesta === undefined
-        || form.asignaturasPropuesta === ''
+        form.asignaturasDocentes === undefined
+        || form.asignaturasDocentes.length === 0
       ) {
         setError((prevError) => ({
           ...prevError,
-          asignaturasPropuesta: 'Seleccione una asignatura',
+          asignaturasDocentes: 'Seleccione al menos una asignatura',
         }));
         return false;
       }
-      setError((prevError) => ({ ...prevError, asignaturasPropuesta: '' }));
+      setError((prevError) => ({ ...prevError, asignaturasDocentes: '' }));
       return true;
     },
     tipoContratacion: () => {
-      if (form.tipoContratacion === undefined || form.tipoContratacion === '') {
+      if (
+        form.tipoContratacion === undefined
+        || form.tipoContratacion === ''
+      ) {
         setError((prevError) => ({
           ...prevError,
-          tipoContratacion: 'Seleccione una asignatura',
+          tipoContratacion: 'Seleccione un tipo de contratación',
         }));
         return false;
       }

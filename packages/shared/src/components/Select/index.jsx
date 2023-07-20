@@ -28,6 +28,8 @@ export default function BasicSelect({
     onchange(e);
   };
 
+  const optionList = Array.isArray(options) ? options : [];
+
   return (
     <Box sx={{ minWidth: 120, mt: 2 }}>
       <FormControl fullWidth size="small">
@@ -52,16 +54,15 @@ export default function BasicSelect({
           error={!!errorMessage}
           disabled={disabled}
         >
-          {options
-            && options.map((opcion) => (textValue ? (
-              <MenuItem key={opcion.id} value={opcion.nombre}>
-                {opcion.nombre}
-              </MenuItem>
-            ) : (
-              <MenuItem key={opcion.id} value={opcion.id}>
-                {opcion.nombre}
-              </MenuItem>
-            )))}
+          {optionList.map((opcion) => (textValue ? (
+            <MenuItem key={opcion.id} value={opcion.nombre}>
+              {opcion.nombre}
+            </MenuItem>
+          ) : (
+            <MenuItem key={opcion.id} value={opcion.id}>
+              {opcion.nombre}
+            </MenuItem>
+          )))}
         </Select>
         <FormHelperText error>{errorMessage}</FormHelperText>
       </FormControl>

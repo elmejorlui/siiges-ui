@@ -1,5 +1,8 @@
 import React, {
-  createContext, useState, useMemo, useContext,
+  createContext,
+  useState,
+  useMemo,
+  useContext,
   useEffect,
 } from 'react';
 import PropTypes from 'prop-types';
@@ -10,8 +13,14 @@ export const TablesPlanEstudiosContext = createContext();
 export function TablesPlanEstudiosProvider({ children }) {
   const { id, setNoti, programaId } = useContext(SolicitudContext);
   const [formAsignaturas, setFormAsignaturas] = useState({ tipo: 1 });
-  const [formAsignaturasFormacion, setFormAsignaturasFormacion] = useState({ tipo: 2 });
-  const [formDocentes, setFormDocentes] = useState({});
+  const [formAsignaturasFormacion, setFormAsignaturasFormacion] = useState({
+    tipo: 2,
+  });
+  const [formDocentes, setFormDocentes] = useState({
+    esAceptado: true,
+    persona: {},
+    asignaturasDocentes: [],
+  });
   const [asignaturasList, setAsignaturasList] = useState([]);
   const [asignaturasFormacionList, setAsignaturasFormacionList] = useState([]);
   const [docentesList, setDocentesList] = useState([]);
