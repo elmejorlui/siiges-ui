@@ -7,7 +7,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import BasicSelect from '@siiges-ui/shared/src/components/Select';
 import errorDatosDocentes from '../../sections/errors/errorDatosDocentes';
-import handleCreate from '../../submitNewAsignaturas';
+import handleCreate from '../../submitNewDocentes';
 import { TablesPlanEstudiosContext } from '../../Context/tablesPlanEstudiosProviderContext';
 import getAsignaturas from '../../getAsignaturas';
 

@@ -2,7 +2,7 @@ const handleCreate = (
   form,
   setForm,
   setInitialValues,
-  setAsignaturasList,
+  setDocentesList,
   hideModal,
   errors,
   setNoti,
@@ -22,7 +22,7 @@ const handleCreate = (
     return;
   }
 
-  fetch('http://localhost:3000/api/v1/asignaturas', {
+  fetch('http://localhost:3000/api/v1/docentes', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', api_key: apikey },
     body: JSON.stringify(form),
@@ -30,7 +30,7 @@ const handleCreate = (
     .then((response) => response.json())
     .then((data) => {
       const newData = { ...form, id: data.data.id };
-      setAsignaturasList((prevList) => [...prevList, newData]);
+      setDocentesList((prevList) => [...prevList, newData]);
       setForm({ programaId, tipo });
       setInitialValues({});
       hideModal();
