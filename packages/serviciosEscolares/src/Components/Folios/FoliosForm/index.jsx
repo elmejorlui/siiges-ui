@@ -150,10 +150,13 @@ export default function FoliosForm({
 
   const handleDocumentoChange = (event) => {
     const tipoDocumento = event.target.value;
+
     setTipoDocumento(tipoDocumento);
+
     setState((prevState) => ({
       ...prevState,
       selectedDocumento: tipoDocumento,
+      selectedSolicitud: tipoDocumento === 1 ? 1 : null,
     }));
   };
 
