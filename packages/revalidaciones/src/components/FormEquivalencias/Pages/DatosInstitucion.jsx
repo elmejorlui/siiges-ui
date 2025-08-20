@@ -28,7 +28,6 @@ export default function DatosInstitucion({
   useEffect(() => {
     if (form.interesado?.institucionDestino) {
       const { institucionDestino } = form.interesado;
-      console.log(institucionDestino?.institucionDestinoPrograma?.programa?.plantel?.institucionId);
 
       setTipoInstitucionId(institucionDestino.tipoInstitucionId || '');
       setInstitucionId(institucionDestino?.institucionDestinoPrograma?.programa?.plantel?.institucionId || '');

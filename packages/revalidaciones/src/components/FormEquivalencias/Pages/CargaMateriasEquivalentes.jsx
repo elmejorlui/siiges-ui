@@ -217,6 +217,8 @@ export default function CargaMateriasEquivalentes({ form, handleOnChange, disabl
     form.interesado?.institucionDestino?.tipoInstitucionId,
   ]);
 
+  console.log(form);
+
   return (
     <>
       <Grid container spacing={1}>
