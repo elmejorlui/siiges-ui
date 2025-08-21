@@ -77,6 +77,7 @@ export default function CargaMateriasEquivalentes({ form, handleOnChange, disabl
   const [calificacionAntecedente, setCalificacionAntecedente] = useState('');
   const [nombreAsignaturaEquivalente, setMateriaEquivalente] = useState('');
   const [asignaturaId, setAsignaturaId] = useState(null);
+  const [programa, setPrograma] = useState({});
   const [calificacionEquivalente, setCalificacionEquivalente] = useState('');
   const [materiasList, setMateriasList] = useState([]);
   const [rows, setRows] = useState([]);
@@ -208,6 +209,10 @@ export default function CargaMateriasEquivalentes({ form, handleOnChange, disabl
         `${domain}/api/v1/public/asignaturas/programas/${form.interesado?.institucionDestino?.programaId}`,
         setMateriasList,
       );
+      fetchData(
+        `${domain}/api/v1/public/programas?acuerdoRvoe=${form.interesado?.institucionDestino?.acuerdoRvoe}`,
+        setPrograma,
+      );
     } else {
       setMateriasList([]);
       setAsignaturaId(null);
@@ -217,7 +222,7 @@ export default function CargaMateriasEquivalentes({ form, handleOnChange, disabl
     form.interesado?.institucionDestino?.tipoInstitucionId,
   ]);
 
-  console.log(form);
+  console.log(programa);
 
   return (
     <>
@@ -334,6 +339,7 @@ CargaMateriasEquivalentes.propTypes = {
       ),
       institucionDestino: PropTypes.shape({
         programaId: PropTypes.number,
+        acuerdoRvoe: PropTypes.string,
         tipoInstitucionId: PropTypes.number,
       }),
     }),

@@ -129,9 +129,17 @@ export default function DatosInstitucion({
   const handleRvoeChange = (event) => {
     const selectedId = event.target.value;
     const selectedRvoe = rvoes.find((rvoe) => rvoe.id === selectedId);
+    const rvoeName = rvoesList.find((rvoe) => rvoe.id === selectedId);
 
     if (selectedRvoe) {
       setCarrera(selectedRvoe.nombre);
+      const syntheticEvent = {
+        target: {
+          name: 'acuerdoRvoe',
+          value: rvoeName.nombre,
+        },
+      };
+      handleOnChange(syntheticEvent, ['interesado', 'institucionDestino']);
     } else {
       setCarrera('');
     }
@@ -144,7 +152,6 @@ export default function DatosInstitucion({
     if (tipoInstitucionId === 1) {
       fetchProgramas(acuerdoRvoe);
     }
-    handleOnChange(event, ['interesado', 'institucionDestino']);
   };
 
   return (
@@ -249,6 +256,7 @@ export default function DatosInstitucion({
             name="acuerdoRvoe"
             value={form.interesado?.institucionDestino?.institucionDestinoPrograma?.programa?.acuerdoRvoe || form.interesado?.institucionDestino?.acuerdoRvoe || ''}
             onBlur={handleRvoeOnBlur}
+            onChange={(e) => handleOnChange(e, ['interesado', 'institucionDestino'])}
             errorMessage={rvoeError}
             disabled={disabled}
           />
