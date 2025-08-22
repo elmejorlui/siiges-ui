@@ -120,6 +120,8 @@ export default function FormEquivalencias() {
     });
   };
 
+  console.log(form);
+
   const handleOnSubmit = async () => {
     if (isSubmitting) return;
 

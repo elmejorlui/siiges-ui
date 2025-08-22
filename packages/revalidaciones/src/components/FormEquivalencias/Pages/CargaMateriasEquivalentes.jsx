@@ -3,12 +3,18 @@ import { Grid, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {
-  ButtonsForm, DataTable, DefaultModal, Input, Select,
+  ButtonsForm,
+  DataTable,
+  DefaultModal,
+  Input,
+  LabelData,
+  Select,
 } from '@siiges-ui/shared';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import fetchData from '../../../utils/FetchData';
+import CalificacionInput from '../../../utils/CalificacionInput';
 
 const columns = (handleDelete, handleEdit, disabled) => [
   {
@@ -35,43 +41,45 @@ const columns = (handleDelete, handleEdit, disabled) => [
     field: 'actions',
     headerName: 'Acciones',
     width: 120,
-    renderCell: (params) => (
-      !disabled ? (
-        <>
-          <Tooltip title="Editar" placement="top">
-            <IconButton
-              onClick={() => handleEdit(params.row)}
-              aria-label="editar"
-            >
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Eliminar" placement="top">
-            <IconButton
-              onClick={() => handleDelete(params.row.id)}
-              aria-label="eliminar"
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </>
-      ) : (
-        <Tooltip title="Consultar" placement="top">
+    renderCell: (params) => (!disabled ? (
+      <>
+        <Tooltip title="Editar" placement="top">
           <IconButton
             onClick={() => handleEdit(params.row)}
-            aria-label="consultar"
+            aria-label="editar"
           >
-            <VisibilityOutlinedIcon />
+            <EditIcon />
           </IconButton>
         </Tooltip>
-      )
-    ),
+        <Tooltip title="Eliminar" placement="top">
+          <IconButton
+            onClick={() => handleDelete(params.row.id)}
+            aria-label="eliminar"
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      </>
+    ) : (
+      <Tooltip title="Consultar" placement="top">
+        <IconButton
+          onClick={() => handleEdit(params.row)}
+          aria-label="consultar"
+        >
+          <VisibilityOutlinedIcon />
+        </IconButton>
+      </Tooltip>
+    )),
   },
 ];
 
 const domain = process.env.NEXT_PUBLIC_URL;
 
-export default function CargaMateriasEquivalentes({ form, handleOnChange, disabled }) {
+export default function CargaMateriasEquivalentes({
+  form,
+  handleOnChange,
+  disabled,
+}) {
   const [open, setOpen] = useState(false);
   const [nombreAsignaturaAntecedente, setMateriaAntecedente] = useState('');
   const [calificacionAntecedente, setCalificacionAntecedente] = useState('');
@@ -138,7 +146,9 @@ export default function CargaMateriasEquivalentes({ form, handleOnChange, disabl
       calificacionAntecedente,
     };
 
-    const updatedList = [...form.interesado.asignaturasAntecedentesEquivalentes];
+    const updatedList = [
+      ...form.interesado.asignaturasAntecedentesEquivalentes,
+    ];
 
     if (isEditing && editingId !== null) {
       updatedList[editingId] = newEntry;
@@ -162,25 +172,29 @@ export default function CargaMateriasEquivalentes({ form, handleOnChange, disabl
   useEffect(() => {
     if (form?.interesado?.asignaturasAntecedentesEquivalentes) {
       setRows(
-        form.interesado.asignaturasAntecedentesEquivalentes.map((item, index) => ({
-          id: index,
-          asignaturaId: item.asignaturaId,
-          materiasAntecedente: item.nombreAsignaturaAntecedente,
-          calificacionAntecedente: item.calificacionAntecedente,
-          materiasEquivalentes: item.nombreAsignaturaEquivalente,
-          calificacionEquivalente: item.calificacionEquivalente,
-        })),
+        form.interesado.asignaturasAntecedentesEquivalentes.map(
+          (item, index) => ({
+            id: index,
+            asignaturaId: item.asignaturaId,
+            materiasAntecedente: item.nombreAsignaturaAntecedente,
+            calificacionAntecedente: item.calificacionAntecedente,
+            materiasEquivalentes: item.nombreAsignaturaEquivalente,
+            calificacionEquivalente: item.calificacionEquivalente,
+          }),
+        ),
       );
     } else if (form?.interesado?.asignaturasAntecedenteEquivalente) {
       setRows(
-        form.interesado.asignaturasAntecedenteEquivalente.map((item, index) => ({
-          id: index,
-          asignaturaId: item.asignaturaId,
-          materiasAntecedente: item.nombreAsignaturaAntecedente,
-          calificacionAntecedente: item.calificacionAntecedente,
-          materiasEquivalentes: item.nombreAsignaturaEquivalente,
-          calificacionEquivalente: item.calificacionEquivalente,
-        })),
+        form.interesado.asignaturasAntecedenteEquivalente.map(
+          (item, index) => ({
+            id: index,
+            asignaturaId: item.asignaturaId,
+            materiasAntecedente: item.nombreAsignaturaAntecedente,
+            calificacionAntecedente: item.calificacionAntecedente,
+            materiasEquivalentes: item.nombreAsignaturaEquivalente,
+            calificacionEquivalente: item.calificacionEquivalente,
+          }),
+        ),
       );
     }
   }, [form]);
@@ -222,8 +236,6 @@ export default function CargaMateriasEquivalentes({ form, handleOnChange, disabl
     form.interesado?.institucionDestino?.tipoInstitucionId,
   ]);
 
-  console.log(programa);
-
   return (
     <>
       <Grid container spacing={1}>
@@ -240,11 +252,35 @@ export default function CargaMateriasEquivalentes({ form, handleOnChange, disabl
         />
       </Grid>
       <DefaultModal
-        title={isEditing ? 'Editar Materia Equivalente' : 'Materias Equivalentes'}
+        title={
+          isEditing ? 'Editar Materia Equivalente' : 'Materias Equivalentes'
+        }
         open={open}
         setOpen={setOpen}
       >
         <Grid container spacing={1}>
+          {programa && (
+            <>
+              <Grid item xs={4}>
+                <LabelData
+                  title="Calificacion Minima"
+                  subtitle={programa.calificacionMinima}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <LabelData
+                  title="Calificacion Maxima"
+                  subtitle={programa.calificacionMaxima}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <LabelData
+                  title="Calificacion Aprovatoria"
+                  subtitle={programa.calificacionAprobatoria}
+                />
+              </Grid>
+            </>
+          )}
           <Grid item xs={6}>
             <Input
               id="nombreAsignaturaAntecedente"
@@ -256,7 +292,7 @@ export default function CargaMateriasEquivalentes({ form, handleOnChange, disabl
             />
           </Grid>
           <Grid item xs={6}>
-            <Input
+            <CalificacionInput
               id="calificacionAntecedente"
               name="calificacionAntecedente"
               label="Calificación de Antecedente"
@@ -275,26 +311,28 @@ export default function CargaMateriasEquivalentes({ form, handleOnChange, disabl
                 onChange={(e) => setAsignaturaId(e.target.value)}
                 disabled={disabled}
               />
-            )
-              : (
-                <Input
-                  id="nombreAsignaturaEquivalente"
-                  name="nombreAsignaturaEquivalente"
-                  label="Materias de Equivalente"
-                  value={nombreAsignaturaEquivalente}
-                  onChange={(e) => setMateriaEquivalente(e.target.value)}
-                  disabled={disabled}
-                />
-              )}
+            ) : (
+              <Input
+                id="nombreAsignaturaEquivalente"
+                name="nombreAsignaturaEquivalente"
+                label="Materias de Equivalente"
+                value={nombreAsignaturaEquivalente}
+                onChange={(e) => setMateriaEquivalente(e.target.value)}
+                disabled={disabled}
+              />
+            )}
           </Grid>
           <Grid item xs={6}>
-            <Input
+            <CalificacionInput
               id="calificacionEquivalente"
               name="calificacionEquivalente"
               label="Calificación de Equivalente"
               value={calificacionEquivalente}
               onChange={(e) => setCalificacionEquivalente(e.target.value)}
               disabled={disabled}
+              calificacionMinima={programa?.calificacionMinima}
+              calificacionMaxima={programa?.calificacionMaxima}
+              calificacionDecimal={programa?.calificacionDecimal}
             />
           </Grid>
           <Grid item xs={12}>
@@ -312,7 +350,7 @@ export default function CargaMateriasEquivalentes({ form, handleOnChange, disabl
 }
 
 CargaMateriasEquivalentes.defaultProps = {
-  handleOnChange: () => { },
+  handleOnChange: () => {},
   disabled: false,
 };
 
