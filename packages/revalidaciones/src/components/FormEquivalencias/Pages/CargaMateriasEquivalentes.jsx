@@ -115,7 +115,6 @@ export default function CargaMateriasEquivalentes({
       (item) => item.asignaturaId === row.asignaturaId,
     );
     setEditingId(index);
-
     setIsEditing(true);
 
     setMateriaAntecedente(row.materiasAntecedente);
@@ -236,6 +235,19 @@ export default function CargaMateriasEquivalentes({
     form.interesado?.institucionDestino?.tipoInstitucionId,
   ]);
 
+  // 🔎 Filtrar materias disponibles evitando duplicados
+  const materiasDisponibles = materiasList.filter((materia) => {
+    const usados = form?.interesado?.asignaturasAntecedentesEquivalentes?.map(
+      (item) => item.asignaturaId,
+    ) || [];
+
+    if (isEditing && asignaturaId) {
+      return !usados.includes(materia.id) || materia.id === asignaturaId;
+    }
+
+    return !usados.includes(materia.id);
+  });
+
   return (
     <>
       <Grid container spacing={1}>
@@ -263,19 +275,19 @@ export default function CargaMateriasEquivalentes({
             <>
               <Grid item xs={4}>
                 <LabelData
-                  title="Calificacion Minima"
+                  title="Calificación Minima"
                   subtitle={programa.calificacionMinima}
                 />
               </Grid>
               <Grid item xs={4}>
                 <LabelData
-                  title="Calificacion Maxima"
+                  title="Calificación Maxima"
                   subtitle={programa.calificacionMaxima}
                 />
               </Grid>
               <Grid item xs={4}>
                 <LabelData
-                  title="Calificacion Aprovatoria"
+                  title="Calificación Aprobatoria"
                   subtitle={programa.calificacionAprobatoria}
                 />
               </Grid>
@@ -305,7 +317,7 @@ export default function CargaMateriasEquivalentes({
             {materiasList?.length > 0 ? (
               <Select
                 title="Materias de Equivalente"
-                options={materiasList}
+                options={materiasDisponibles}
                 name="nombreAsignaturaEquivalente"
                 value={asignaturaId || ''}
                 onChange={(e) => setAsignaturaId(e.target.value)}

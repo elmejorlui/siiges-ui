@@ -17,24 +17,33 @@ export default function CalificacionInput({
     let val = e.target.value;
 
     if (!calificacionDecimal) {
-      val = val.replace(/\D/g, '');
+      val = val.replace(/\D/g, ''); // solo números enteros
     } else {
-      val = val.replace(/[^0-9.]/g, '');
+      val = val.replace(/[^0-9.]/g, ''); // números y punto decimal
       const parts = val.split('.');
       if (parts.length > 2) {
-        val = `${parts[0]}.${parts[1]}`;
+        val = `${parts[0]}.${parts[1]}`; // evita más de un punto decimal
       }
     }
 
-    // Validación de rango
+    onChange({ target: { name, value: val } });
+  };
+
+  const handleBlur = (e) => {
+    const val = e.target.value;
+
     if (val !== '' && !Number.isNaN(val)) {
       let num = calificacionDecimal ? parseFloat(val) : parseInt(val, 10);
-      if (num < calificacionMinima) num = calificacionMinima;
-      if (num > calificacionMaxima) num = calificacionMaxima;
-      val = num.toString();
-    }
 
-    onChange({ target: { name, value: val } });
+      if (Number.isNaN(num)) {
+        num = '';
+      } else {
+        if (num < calificacionMinima) num = calificacionMinima;
+        if (num > calificacionMaxima) num = calificacionMaxima;
+      }
+
+      onChange({ target: { name, value: num.toString() } });
+    }
   };
 
   return (
@@ -47,6 +56,7 @@ export default function CalificacionInput({
       label={label}
       value={value}
       onChange={handleChange}
+      onBlur={handleBlur}
       disabled={disabled}
       inputProps={{
         inputMode: calificacionDecimal ? 'decimal' : 'numeric',
