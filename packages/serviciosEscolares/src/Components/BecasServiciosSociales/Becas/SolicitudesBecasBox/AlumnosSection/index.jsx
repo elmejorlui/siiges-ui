@@ -177,9 +177,10 @@ export default function AlumnosSection({ programa, solicitudId, disabled }) {
         setAlumno({
           id: data.data.alumnoId,
           nombre: `${data.data.alumno?.persona?.nombre} ${data.data.alumno?.persona?.apellidoPaterno} ${data.data.alumno?.persona?.apellidoMaterno}`,
-          estatus: data.data.estatusAlumnoBecaId,
+          estatus: estatusAlumnos.find((estatus) => estatus.id === data.data.estatusAlumnoBecaId)?.nombre || '',
           correo: data.data.alumno?.persona?.correoPrimario,
           telefono: data.data.alumno?.persona?.telefono,
+          curp: data.data.alumno?.persona?.curp,
         });
       };
       fetchAlumnoData();
@@ -216,6 +217,7 @@ export default function AlumnosSection({ programa, solicitudId, disabled }) {
               estatus: response.data.situacion.nombre,
               correo: response.data.persona.correoPrimario,
               telefono: response.data.persona.telefono,
+              curp: response.data.persona.curp,
             });
             setForm((prevForm) => ({
               ...prevForm,
