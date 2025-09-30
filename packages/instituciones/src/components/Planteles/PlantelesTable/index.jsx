@@ -78,6 +78,7 @@ export default function Planteles({ planteles, institucionId, session }) {
   const handleDeleteClick = (id) => () => {
     setRows(rows.filter((row) => row.id !== id));
   };
+
   const columns = [
     { field: 'domicilio', headerName: 'Domicilio', width: 240 },
     { field: 'colonia', headerName: 'Colonia', width: 240 },
@@ -111,11 +112,12 @@ export default function Planteles({ planteles, institucionId, session }) {
           <>
             <ActionButtons
               id={actionButtonsProps.id}
+              nonDeletablePlanteles={nonDeletablePlanteles}
               consultar={actionButtonsProps.consultar}
               editar={actionButtonsProps.editar}
               eliminar={actionButtonsProps.eliminar}
             />
-            <DefaultModal open={modal} setOpen={hideModal} id={modalId}>
+            <DefaultModal open={modal} setOpen={hideModal} id={modalId} title="Eliminar Plantel">
               <Typography>¿Desea eliminar este plantel?</Typography>
               <Grid container spacing={2} justifyContent="flex-end">
                 <Grid item>
@@ -123,9 +125,7 @@ export default function Planteles({ planteles, institucionId, session }) {
                     text="Cancelar"
                     design="cancel"
                     onClick={hideModal}
-                  >
-                    Cancelar
-                  </ButtonSimple>
+                  />
                 </Grid>
                 <Grid item>
                   <ButtonSimple
@@ -138,9 +138,7 @@ export default function Planteles({ planteles, institucionId, session }) {
                         handleDeleteClick,
                       );
                     }}
-                  >
-                    Confirmar
-                  </ButtonSimple>
+                  />
                 </Grid>
               </Grid>
             </DefaultModal>

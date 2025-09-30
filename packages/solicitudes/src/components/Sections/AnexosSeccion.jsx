@@ -1,11 +1,11 @@
 import { Grid, Typography } from '@mui/material';
 import { GetFile, InputFile } from '@siiges-ui/shared';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import useSectionDisabled from './Hooks/useSectionDisabled';
 
 export default function AnexosSeccion({
-  disabled, id, type, institucionId, usuarioId, plantelId, programaId,
+  disabled, id, type, institucionId, usuarioId, plantelId, programaId, tipoSolicitudId,
 }) {
   const [fileURLs, setFileURLs] = useState(Array(11).fill(null));
   const isSectionDisabled = useSectionDisabled(20);
@@ -13,43 +13,90 @@ export default function AnexosSeccion({
 
   const tiposDocumentos = [
     {
-      tipoDocumento: 'IDENTIFICACION_REPRESENTANTE', label: 'Identificación oficial con fotografía', tipoEntidad: 'REPRESENTANTE', entidad: () => usuarioId,
+      tipoDocumento: 'IDENTIFICACION_REPRESENTANTE',
+      label: 'Identificación oficial con fotografía / Acta constitutiva',
+      tipoEntidad: 'REPRESENTANTE',
+      entidad: () => usuarioId,
     },
     {
-      tipoDocumento: 'COMPROBANTE_PAGO_RVOE', label: 'Comprobante de pago', tipoEntidad: 'SOLICITUD', entidad: () => id,
+      tipoDocumento: 'COMPROBANTE_PAGO_RVOE',
+      label: 'Comprobante de pago',
+      tipoEntidad: 'SOLICITUD',
+      entidad: () => id,
     },
     {
-      tipoDocumento: 'FOTOGRAFIA_INMUEBLE', label: 'Fotografías inmuebles', tipoEntidad: 'PLANTEL', entidad: () => plantelId,
+      tipoDocumento: 'FOTOGRAFIA_INMUEBLE',
+      label: 'Fotografías inmuebles',
+      tipoEntidad: 'PLANTEL',
+      entidad: () => plantelId,
     },
     {
-      tipoDocumento: 'CONSTANCIA_INFEJAL', label: 'Constancia INFEJAL', tipoEntidad: 'PLANTEL', entidad: () => plantelId,
+      tipoDocumento: 'CONSTANCIA_INFEJAL',
+      label: 'Constancia INFEJAL',
+      tipoEntidad: 'PLANTEL',
+      entidad: () => plantelId,
     },
     {
-      tipoDocumento: 'LICENCIA_MUNICIPAL', label: 'Licencia municipal', tipoEntidad: 'PLANTEL', entidad: () => plantelId,
+      tipoDocumento: 'LICENCIA_MUNICIPAL',
+      label: 'Licencia municipal',
+      tipoEntidad: 'PLANTEL',
+      entidad: () => plantelId,
     },
     {
-      tipoDocumento: 'DICTAMEN_IMPI', label: 'Dictamen del Instituto Mexicano de Propiedad Intelectual (IMPI)', tipoEntidad: 'INSTITUCION', entidad: () => institucionId,
+      tipoDocumento: 'DICTAMEN_IMPI',
+      label: 'Dictamen del Instituto Mexicano de Propiedad Intelectual (IMPI)',
+      tipoEntidad: 'INSTITUCION',
+      entidad: () => institucionId,
     },
     {
-      tipoDocumento: 'SECRETARIA_SALUD', label: 'Aviso funcionamiento de Secretaría de Salud ó Carta bajo protesta de decir verdad de NO venta de alimentos.', tipoEntidad: 'PLANTEL', entidad: () => plantelId,
+      tipoDocumento: 'SECRETARIA_SALUD',
+      label: 'Aviso funcionamiento de Secretaría de Salud ó Carta bajo protesta de decir verdad de NO venta de alimentos.',
+      tipoEntidad: 'PLANTEL',
+      entidad: () => plantelId,
     },
     {
-      tipoDocumento: 'COMPROBANTE_TELEFONO', label: 'Comprobante de línea telefónica', tipoEntidad: 'PLANTEL', entidad: () => plantelId,
+      tipoDocumento: 'COMPROBANTE_TELEFONO',
+      label: 'Comprobante de línea telefónica',
+      tipoEntidad: 'PLANTEL',
+      entidad: () => plantelId,
     },
     {
-      tipoDocumento: 'PROYECTO_VINCULACION', label: 'Proyecto de vinculación y movilidad', tipoEntidad: 'PROGRAMA', entidad: () => programaId,
+      tipoDocumento: 'PROYECTO_VINCULACION',
+      label: 'Proyecto de vinculación y movilidad',
+      tipoEntidad: 'PROGRAMA',
+      entidad: () => programaId,
     },
     {
-      tipoDocumento: 'PLAN_MEJORA', label: 'Plan de mejora', tipoEntidad: 'PROGRAMA', entidad: () => programaId,
+      tipoDocumento: 'PLAN_MEJORA',
+      label: 'Plan de mejora',
+      tipoEntidad: 'PROGRAMA',
+      entidad: () => programaId,
     },
     {
-      tipoDocumento: 'PROGRAMA_SUPERACION', label: 'Programa de superación', tipoEntidad: 'PROGRAMA', entidad: () => programaId,
+      tipoDocumento: 'PROGRAMA_SUPERACION',
+      label: 'Programa de superación',
+      tipoEntidad: 'PROGRAMA',
+      entidad: () => programaId,
     },
   ];
 
+  // Filtrar anexos según tipoSolicitudId
+  const filteredDocumentos = useMemo(() => {
+    if (tipoSolicitudId === 2) {
+      const permitidos = [
+        'IDENTIFICACION_REPRESENTANTE', // Acta constitutiva
+        'PROYECTO_VINCULACION',
+        'PLAN_MEJORA',
+        'PROGRAMA_SUPERACION',
+      ];
+      return tiposDocumentos.filter((doc) => permitidos.includes(doc.tipoDocumento));
+    }
+    return tiposDocumentos;
+  }, [tipoSolicitudId, tiposDocumentos]);
+
   useEffect(() => {
     if ((type === 'editar' || type === 'consultar') && id) {
-      tiposDocumentos.forEach(({ tipoDocumento, tipoEntidad, entidad }, index) => {
+      filteredDocumentos.forEach(({ tipoDocumento, tipoEntidad, entidad }, index) => {
         GetFile({ tipoEntidad, tipoDocumento, entidadId: entidad() }, (url, err) => {
           if (!err) {
             setFileURLs((urls) => {
@@ -61,7 +108,7 @@ export default function AnexosSeccion({
         });
       });
     }
-  }, [type, id, institucionId, usuarioId, plantelId, programaId]);
+  }, [type, id, institucionId, usuarioId, plantelId, programaId, filteredDocumentos]);
 
   const handleFileLoaded = (index, url) => {
     setFileURLs((prev) => {
@@ -78,7 +125,7 @@ export default function AnexosSeccion({
       </Grid>
 
       <Grid container spacing={2} sx={{ ml: 15, width: '100%' }}>
-        {tiposDocumentos.map(({
+        {filteredDocumentos.map(({
           tipoDocumento, label, tipoEntidad, entidad,
         }, index) => (
           <Grid item xs={12} key={tipoDocumento}>
@@ -92,11 +139,11 @@ export default function AnexosSeccion({
               label={label}
             />
             {tipoDocumento === 'IDENTIFICACION_REPRESENTANTE' && (
-            <Typography variant="subtitle2">
-              En el caso de ser persona física anexar la Identificación oficial, en el caso
-              de contar con razón social o persona moral anexar el acta constitutiva junto
-              con su Identificación oficial.
-            </Typography>
+              <Typography variant="subtitle2">
+                En el caso de ser persona física anexar la Identificación oficial,
+                en el caso de contar con razón social o persona moral anexar el acta
+                constitutiva junto con su Identificación oficial.
+              </Typography>
             )}
           </Grid>
         ))}
@@ -121,5 +168,6 @@ AnexosSeccion.propTypes = {
   plantelId: PropTypes.number,
   usuarioId: PropTypes.number,
   programaId: PropTypes.number,
+  tipoSolicitudId: PropTypes.number.isRequired,
   type: PropTypes.string,
 };

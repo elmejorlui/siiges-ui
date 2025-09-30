@@ -1,32 +1,31 @@
-import Tooltip from '@mui/material/Tooltip';
-import { IconButton, Stack } from '@mui/material';
+import { Stack, Tooltip, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import CiclosEscolaresModal from './CiclosEscolaresModal';
+import DeleteCicloEscolar from './DeleteCiclosEscolares';
 
 export default function ButtonsCiclosEscolares({ row, handleSuccess }) {
-  const [open, setOpen] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
 
   return (
     <>
       <Stack direction="row" spacing={1}>
-        {row && (
-          <Tooltip title="Editar" placement="top">
-            <IconButton
-              aria-label="Ciclos Escolares Editar"
-              onClick={() => {
-                setOpen(true);
-              }}
-            >
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-        )}
+        <Tooltip title="Editar" placement="top">
+          <IconButton
+            aria-label="Editar Ciclo escolar"
+            onClick={() => setOpenEdit(true)}
+          >
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+
+        <DeleteCicloEscolar id={row.id} onSuccess={handleSuccess} />
       </Stack>
+
       <CiclosEscolaresModal
-        open={open}
-        setOpen={setOpen}
+        open={openEdit}
+        setOpen={setOpenEdit}
         onSuccess={handleSuccess}
         type="edit"
         data={row}
@@ -36,6 +35,8 @@ export default function ButtonsCiclosEscolares({ row, handleSuccess }) {
 }
 
 ButtonsCiclosEscolares.propTypes = {
-  row: PropTypes.number.isRequired,
+  row: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+  }).isRequired,
   handleSuccess: PropTypes.func.isRequired,
 };

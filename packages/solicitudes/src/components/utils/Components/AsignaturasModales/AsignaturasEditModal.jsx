@@ -67,9 +67,12 @@ export default function AsignaturasEditModal({
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
+
     setFormAsignaturas((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name === 'seriacion'
+        ? value.join(',')
+        : value,
     }));
   };
 
@@ -181,11 +184,18 @@ export default function AsignaturasEditModal({
           <BasicSelect
             title="Seriación"
             name="seriacion"
-            value={rowItem.seriacion || ''}
-            options={[{ value: '', label: '' }, ...(asignaturasList || [])]}
+            multiple
+            value={
+              formAsignaturas.seriacion
+                ? formAsignaturas.seriacion.split(',')
+                : []
+            }
+            options={(asignaturasList || []).map((asig) => ({
+              id: asig.clave,
+              nombre: `${asig.nombre} | ${asig.clave}`,
+            }))}
             onChange={handleOnChange}
             disabled={edit === 'Consultar Asignatura'}
-            textValue
           />
         </Grid>
         <Grid item xs={6}>

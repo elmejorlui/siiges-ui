@@ -50,7 +50,7 @@ export default function AsignaturasFormacionCreateModal({
     const { name, value } = e.target;
     setFormAsignaturasFormacion((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: Array.isArray(value) ? value.join(',') : value,
     }));
   };
 
@@ -143,10 +143,17 @@ export default function AsignaturasFormacionCreateModal({
           <BasicSelect
             title="Seriación"
             name="seriacion"
-            value={formAsignaturasFormacion.seriacion || ''}
-            options={asignaturasTotalList || []}
+            value={
+              formAsignaturasFormacion.seriacion
+                ? formAsignaturasFormacion.seriacion.split(',')
+                : []
+            }
+            options={(asignaturasTotalList || []).map((asig) => ({
+              id: asig.clave,
+              nombre: `${asig.nombre} | ${asig.clave}`,
+            }))}
             onChange={handleOnChange}
-            textValue
+            multiple
           />
         </Grid>
         <Grid item xs={6}>

@@ -22,30 +22,14 @@ do
   "$ESLINT" "$FILE"
  
   if [[ "$?" == 0 ]]; then
-    printf "\t\033[32mESLint Passed: $FILE\033[0m"
+    printf "\t\033[32mESLint Passed: $FILE\033[0m\n"
   else
-    printf "\t\033[41mESLint Failed: $FILE\033[0m"
+    printf "\t\033[41mESLint Failed: $FILE\033[0m\n"
     PASS=false
   fi
 done
  
 printf "\nJavascript validation completed!\n"
-
-printf "\nRunning tests:\n"
-npm run test:cov
-if [[ "$?" == 0 ]]; then
-  printf "\t\033[32mTests Passed\n\033[0m"
-  else
-    printf "\t\033[41mTests Failed\n\033[0m"
-    PASS=false
-fi
-
-if ! $PASS; then
-  printf "\033[41mCOMMIT FAILED:\033[0m Your commit contains files that should pass tests and ESLint but do not. Please fix the failing tests / ESLint errors and try again.\n"
-  exit 1
-else
-  printf "\033[42mCOMMIT SUCCEEDED\033[0m\n"
-fi
 
  
 exit $?

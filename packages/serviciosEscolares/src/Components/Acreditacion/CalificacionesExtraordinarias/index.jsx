@@ -143,13 +143,23 @@ export default function calificacionesExtraordinarias({
           ? { ...item, [fieldToUpdate]: newValue }
           : item));
       }
+
+      const alumno = alumnos.find((a) => a.id === alumnoId);
+      const califBase = alumno?.calificaciones?.find((c) => c.tipo === tipo);
+
       return [
         ...prevCalificaciones,
         {
           alumnoId,
           tipo,
-          calificacion: fieldToUpdate === 'calificacion' ? newValue : '',
-          fechaExamen: fieldToUpdate === 'fechaExamen' ? newValue : '',
+          calificacion:
+          fieldToUpdate === 'calificacion'
+            ? newValue
+            : califBase?.calificacion ?? '',
+          fechaExamen:
+          fieldToUpdate === 'fechaExamen'
+            ? newValue
+            : califBase?.fechaExamen ?? '',
         },
       ];
     });

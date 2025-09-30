@@ -10,7 +10,10 @@ import {
   InputAdornment,
   ListSubheader,
   TextField,
+  Checkbox,
+  ListItemText,
 } from '@mui/material';
+
 import SearchIcon from '@mui/icons-material/Search';
 
 const containsText = (text = '', searchText = '') => text.toString().toLowerCase().indexOf(searchText.toString().toLowerCase()) > -1;
@@ -62,7 +65,7 @@ export default function BasicSelect({
           id={String(propValue)}
           label={title}
           name={name}
-          value={option || ''}
+          value={option || (multiple ? [] : '')}
           onChange={handleOnChange}
           onBlur={onblur}
           onFocus={onfocus}
@@ -72,6 +75,13 @@ export default function BasicSelect({
           disabled={disabled}
           MenuProps={{ autoFocus: false }}
           displayEmpty
+          renderValue={(selected) => {
+            if (!multiple) return options.find((o) => (textValue ? o.nombre : o.id) === selected)?.nombre || '';
+            if (selected.length === 0) return '';
+            return selected
+              .map((val) => options.find((o) => (textValue ? o.nombre : o.id) === val)?.nombre)
+              .join(', ');
+          }}
         >
           <ListSubheader>
             <TextField
@@ -94,21 +104,26 @@ export default function BasicSelect({
               }}
             />
           </ListSubheader>
+
           {!multiple && (
           <MenuItem value="" disabled={!multiple}>
             <em />
           </MenuItem>
           )}
-          {displayedOptions
-            && displayedOptions.map((opcion) => (
-              <MenuItem
-                key={opcion.id}
-                value={textValue ? opcion.nombre : opcion.id}
-              >
-                {opcion.nombre}
+
+          {displayedOptions?.map((opcion) => {
+            const value = textValue ? opcion.nombre : opcion.id;
+            return (
+              <MenuItem key={opcion.id} value={value}>
+                {multiple && (
+                <Checkbox checked={option?.includes(value)} />
+                )}
+                <ListItemText primary={opcion.nombre} />
               </MenuItem>
-            ))}
+            );
+          })}
         </Select>
+
         <FormHelperText error>{errorMessage}</FormHelperText>
       </FormControl>
     </Box>

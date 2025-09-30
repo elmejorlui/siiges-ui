@@ -42,6 +42,14 @@ function SolicitudesActions({ id, estatus }) {
           eliminar: estatus === 1 || estatus === 200,
         });
         break;
+      case 'gestor':
+        setShowButtons({
+          ver: true,
+          consultar: true,
+          editar: estatus === 1 || estatus === 200,
+          eliminar: false,
+        });
+        break;
       case 'control_documental':
         setShowButtons({
           ver: true,

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Autocomplete, TextField, Box } from '@mui/material';
@@ -43,16 +44,30 @@ export default function CalificacionExtraInput({
       return;
     }
 
-    const numericValue = parseFloat(inputValue);
+    if (calificacionDecimal) {
+      const numericValue = Number(inputValue);
 
-    if (!Number.isNaN(numericValue)) {
-      let correctedValue = numericValue;
+      if (!Number.isNaN(numericValue)) {
+        let correctedValue = numericValue;
 
-      if (!calificacionDecimal) {
-        correctedValue = numericValue % 1 <= 0.5
-          ? Math.floor(numericValue)
-          : Math.ceil(numericValue);
+        if (correctedValue < calificacionMinima) {
+          correctedValue = calificacionMinima;
+        } else if (correctedValue > calificacionMaxima) {
+          correctedValue = calificacionMaxima;
+        }
+
+        setInputValue(inputValue);
+        updateCalificaciones(id, inputValue, 'calificacion');
+        return;
       }
+    }
+
+    const numericValue = parseFloat(inputValue);
+    if (!Number.isNaN(numericValue)) {
+      let correctedValue = numericValue % 1 <= 0.5
+        ? Math.floor(numericValue)
+        : Math.ceil(numericValue);
+
       if (correctedValue < calificacionMinima) {
         correctedValue = calificacionMinima;
       } else if (correctedValue > calificacionMaxima) {
@@ -86,6 +101,11 @@ export default function CalificacionExtraInput({
         renderInput={(params) => (
           <TextField
             {...params}
+            id={params.id}
+            inputRef={params.InputProps.ref}
+            InputProps={params.InputProps}
+            InputLabelProps={params.InputLabelProps}
+            placeholder={params.inputProps?.placeholder}
             variant="standard"
             fullWidth
             disabled={disabled}

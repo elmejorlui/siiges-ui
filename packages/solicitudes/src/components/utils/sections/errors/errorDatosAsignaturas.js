@@ -1,5 +1,6 @@
 const errorDatosAsignaturas = {
   gradoId: { message: '¡Seleccione un nivel!' },
+  tipo: { message: '¡Seleccione un tipo!' },
   areaId: { message: '¡Seleccione un área!' },
   nombre: { message: '¡Nombre inválido!' },
   clave: { message: '¡Clave inválida!' },

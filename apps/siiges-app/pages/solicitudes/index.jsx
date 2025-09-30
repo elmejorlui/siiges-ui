@@ -1,4 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useContext, useEffect, useMemo, useState,
+} from 'react';
 import {
   NewRequest,
   ChangeAddress,
@@ -55,32 +57,31 @@ export default function Solicitudes() {
   }, [session]);
 
   useEffect(() => {
-    if (option === 'new') setNewRequestContentVisible(true);
-    else setNewRequestContentVisible(false);
-    if (option === 'address') setChangeAddressContentVisible(true);
-    else setChangeAddressContentVisible(false);
-    if (option === 'refrendo') setRefrendoContentVisible(true);
-    else setRefrendoContentVisible(false);
+    setNewRequestContentVisible(option === 'new');
+    setChangeAddressContentVisible(option === 'address');
+    setRefrendoContentVisible(option === 'refrendo');
   }, [option]);
 
   const handleOnChange = (e) => {
     setOption(e.target.value);
   };
 
-  const options = [
-    {
-      id: 'new',
-      nombre: 'Nueva Solicitud',
-    },
-    {
-      id: 'refrendo',
-      nombre: 'Refrendo de plan de estudios',
-    },
-    {
-      id: 'address',
-      nombre: 'Cambio de domicilio',
-    },
-  ];
+  const hasAcuerdoRvoe = useMemo(() => solicitudes?.some(
+    (s) => s.programa?.acuerdoRvoe && s.programa.acuerdoRvoe.trim() !== '',
+  ), [solicitudes]);
+
+  const options = useMemo(() => {
+    const baseOptions = [
+      { id: 'new', nombre: 'Nueva Solicitud' },
+    ];
+    if (hasAcuerdoRvoe) {
+      baseOptions.push(
+        { id: 'refrendo', nombre: 'Refrendo de plan de estudios' },
+        { id: 'address', nombre: 'Cambio de domicilio' },
+      );
+    }
+    return baseOptions;
+  }, [hasAcuerdoRvoe]);
 
   return (
     <Layout title="Solicitudes">

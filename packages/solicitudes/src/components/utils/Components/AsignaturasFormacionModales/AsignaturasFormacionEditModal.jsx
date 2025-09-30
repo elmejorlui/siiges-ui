@@ -72,7 +72,7 @@ export default function AsignaturasFormacionEditModal({
     const { name, value } = e.target;
     setFormAsignaturasFormacion((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: Array.isArray(value) ? value.join(',') : value,
     }));
   };
 
@@ -163,14 +163,20 @@ export default function AsignaturasFormacionEditModal({
           <BasicSelect
             title="Seriación"
             name="seriacion"
-            value={rowItem.seriacion}
-            options={[{ value: '', label: '' }, ...(asignaturasTotalList || [])]}
+            value={
+              formAsignaturasFormacion.seriacion
+                ? formAsignaturasFormacion.seriacion.split(',')
+                : []
+            }
+            options={(asignaturasTotalList || []).map((asig) => ({
+              id: asig.clave,
+              nombre: `${asig.nombre} | ${asig.clave}`,
+            }))}
             onChange={handleOnChange}
+            multiple
             disabled={edit === 'Consultar Asignatura'}
-            textValue
           />
         </Grid>
-
         <Grid item xs={6}>
           <Input
             id="horasDocente"

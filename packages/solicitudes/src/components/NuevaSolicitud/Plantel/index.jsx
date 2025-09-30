@@ -24,6 +24,7 @@ export default function Plantel({
   type,
   solicitud,
   isDisabled,
+  tipoSolicitudId,
 }) {
   const [disabled, setDisabled] = useState(true);
   const { session } = useContext(Context);
@@ -62,13 +63,100 @@ export default function Plantel({
 
   const {
     next, prev, section, position, porcentaje,
-  } = pagination(useState, 6);
+  } = pagination(useState, tipoSolicitudId === 2 ? 2 : 6);
 
-  const renderSection6 = () => (section === 6 ? ratificacion : null);
+  const sectionsMap = useMemo(() => {
+    if (tipoSolicitudId === 2) {
+      return [
+        {
+          id: 1,
+          component: (
+            <DatosPlantel
+              disabled={disabled}
+              plantelesData={plantelesData}
+              setPlantelesData={setPlantelesData}
+              usuarioId={solicitud?.usuarioId}
+              type={type}
+            />
+          ),
+        },
+        {
+          id: 2,
+          component: (
+            <Infraestructura
+              disabled={disabled}
+              programaId={programaId}
+              type={type}
+            />
+          ),
+        },
+      ];
+    }
 
-  if (!institucion) {
-    return null;
-  }
+    return [
+      {
+        id: 1,
+        component: (
+          <DatosPlantel
+            disabled={disabled}
+            plantelesData={plantelesData}
+            setPlantelesData={setPlantelesData}
+            usuarioId={solicitud?.usuarioId}
+            type={type}
+          />
+        ),
+      },
+      {
+        id: 2,
+        component: (
+          <DescripcionPlantel
+            disabled={disabled}
+            plantelesData={plantelesData}
+            setPlantelesData={setPlantelesData}
+            type={type}
+          />
+        ),
+      },
+      {
+        id: 3,
+        component: (
+          <HigienePlantel
+            disabled={disabled}
+            plantelId={plantelesData?.id}
+            type={type}
+          />
+        ),
+      },
+      {
+        id: 4,
+        component: (
+          <InstitucionesAledanas
+            disabled={disabled}
+            programaId={programaId}
+            type={type}
+          />
+        ),
+      },
+      {
+        id: 5,
+        component: (
+          <Infraestructura
+            disabled={disabled}
+            programaId={programaId}
+            type={type}
+          />
+        ),
+      },
+      {
+        id: 6,
+        component: ratificacion,
+      },
+    ];
+  }, [tipoSolicitudId, disabled, plantelesData, solicitud, programaId, ratificacion, type]);
+
+  const activeSection = sectionsMap.find((s) => s.id === section);
+
+  if (!institucion) return null;
 
   return (
     <Card sx={{ mt: 3, mb: 3 }}>
@@ -82,52 +170,14 @@ export default function Plantel({
             sectionTitle="Plantel"
             sections={section}
             position={position}
-            total="6"
+            total={sectionsMap.length}
             porcentaje={porcentaje}
             nextModule={nextModule}
             next={next}
             prev={prev}
             id={id}
           >
-            {section === 1 && (
-              <DatosPlantel
-                disabled={disabled}
-                plantelesData={plantelesData}
-                setPlantelesData={setPlantelesData}
-                usuarioId={solicitud?.usuarioId}
-                type={type}
-              />
-            )}
-            {section === 2 && (
-              <DescripcionPlantel
-                disabled={disabled}
-                plantelesData={plantelesData}
-                setPlantelesData={setPlantelesData}
-                type={type}
-              />
-            )}
-            {section === 3 && (
-              <HigienePlantel
-                disabled={disabled}
-                plantelId={plantelesData?.id}
-                type={type}
-              />
-            )}
-            {section === 4 && (
-              <InstitucionesAledanas
-                disabled={disabled}
-                programaId={programaId}
-                type={type}
-              />
-            )}
-            {section === 5 && (
-              <Infraestructura
-                disabled={disabled}
-                programaId={programaId}
-                type={type}
-              />
-            )}
-            {renderSection6()}
+            {activeSection?.component}
             <Observaciones id={id} section={section + 13} type={type} />
           </SectionLayout>
         </PlantelProvider>
@@ -149,6 +199,7 @@ Plantel.propTypes = {
   programaId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   type: PropTypes.string,
   isDisabled: PropTypes.bool.isRequired,
+  tipoSolicitudId: PropTypes.number.isRequired,
   solicitud: PropTypes.shape({
     id: PropTypes.number,
     usuarioId: PropTypes.number,

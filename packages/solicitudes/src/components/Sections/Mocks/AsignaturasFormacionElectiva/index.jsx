@@ -10,7 +10,13 @@ const columns = (isDisabled, type) => [
     field: 'actions',
     headerName: 'Acciones',
     width: 150,
-    renderCell: (params) => <AsignaturasFormacionButtons id={params.id} isDisabled={isDisabled} type={type}/>,
+    renderCell: (params) => (
+      <AsignaturasFormacionButtons
+        id={params.id}
+        isDisabled={isDisabled}
+        type={type}
+      />
+    ),
     sortable: false,
     filterable: false,
   },

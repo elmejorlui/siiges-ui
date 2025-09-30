@@ -7,7 +7,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import React from 'react';
 import Link from 'next/link';
 
-export default function ActionButtons({ consultar, editar, eliminar }) {
+export default function ActionButtons({
+  id, nonDeletablePlanteles, consultar, editar, eliminar,
+}) {
   const renderButton = (link, label, icon) => {
     if (link) {
       return (
@@ -27,7 +29,7 @@ export default function ActionButtons({ consultar, editar, eliminar }) {
     <Stack direction="row" spacing={1}>
       {renderButton(consultar, 'consultar', <VisibilityOutlinedIcon />)}
       {renderButton(editar, 'editar', <EditIcon />)}
-      {eliminar && (
+      {eliminar && !nonDeletablePlanteles.includes(id) && (
         <Tooltip title="Eliminar" placement="top">
           <IconButton aria-label="eliminar" onClick={eliminar}>
             <DeleteIcon />
@@ -39,10 +41,13 @@ export default function ActionButtons({ consultar, editar, eliminar }) {
 }
 
 ActionButtons.defaultProps = {
-  eliminar: () => { },
+  eliminar: null,
+  nonDeletablePlanteles: [],
 };
 
 ActionButtons.propTypes = {
+  id: PropTypes.number.isRequired,
+  nonDeletablePlanteles: PropTypes.arrayOf(PropTypes.number),
   editar: PropTypes.string.isRequired,
   consultar: PropTypes.string.isRequired,
   eliminar: PropTypes.func,

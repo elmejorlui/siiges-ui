@@ -48,9 +48,10 @@ export default function AsignaturasCreateModal({ open, hideModal, title }) {
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
+
     setFormAsignaturas((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name === 'seriacion' ? value.join(',') : value,
     }));
   };
 
@@ -158,10 +159,17 @@ export default function AsignaturasCreateModal({ open, hideModal, title }) {
           <BasicSelect
             title="Seriación"
             name="seriacion"
-            value=""
-            options={[{ value: '', label: '' }, ...(asignaturasList || [])]}
+            value={
+              formAsignaturas.seriacion
+                ? formAsignaturas.seriacion.split(',')
+                : []
+            }
+            multiple
+            options={(asignaturasList || []).map((asig) => ({
+              id: asig.clave,
+              nombre: `${asig.nombre} | ${asig.clave}`,
+            }))}
             onChange={handleOnChange}
-            textValue
           />
         </Grid>
 
@@ -194,17 +202,10 @@ export default function AsignaturasCreateModal({ open, hideModal, title }) {
       </Grid>
       <Grid container justifyContent="flex-end" marginTop={2}>
         <Grid item xs={2}>
-          <ButtonSimple
-            text="Cancelar"
-            design="cancel"
-            onClick={hideModal}
-          />
+          <ButtonSimple text="Cancelar" design="cancel" onClick={hideModal} />
         </Grid>
         <Grid item xs={2}>
-          <ButtonSimple
-            text="Guardar"
-            onClick={handleOnSubmit}
-          />
+          <ButtonSimple text="Guardar" onClick={handleOnSubmit} />
         </Grid>
       </Grid>
     </DefaultModal>
