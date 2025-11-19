@@ -4,7 +4,13 @@ import {
   Divider, Grid, IconButton, Paper, Typography,
 } from '@mui/material';
 import {
-  Context, DataTable, getData, Select,
+  ButtonsForm,
+  Context,
+  DataTable,
+  DefaultModal,
+  getData,
+  Select,
+  updateRecord,
 } from '@siiges-ui/shared';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import GradingIcon from '@mui/icons-material/Grading';
@@ -17,7 +23,7 @@ const tipoConsulta = [
 ];
 
 const ESTATUS_MAP = {
-  1: 'En Captura',
+  1: 'Recibida',
   2: 'En Revisión',
   3: 'En Firma',
   4: 'Procesada',
@@ -26,10 +32,10 @@ const ESTATUS_MAP = {
 };
 
 const getColumns = (handleConsultar, handleRevisar, handleProcesar) => [
-  { field: 'id', headerName: 'ID', width: 100 },
+  { field: 'id', headerName: 'ID', hide: true },
   { field: 'folioSolicitud', headerName: 'Folio', width: 200 },
   { field: 'estatusSolicitud', headerName: 'Estatus', width: 150 },
-  { field: 'nombre', headerName: 'Nombre', width: 450 },
+  { field: 'nombre', headerName: 'Nombre', width: 550 },
   { field: 'fecha', headerName: 'Fecha', width: 100 },
   {
     field: 'actions',
@@ -65,6 +71,8 @@ export default function RevalidacionEquivalencias() {
   const [tipoConsultaId, setTipoConsultaId] = useState(null);
   const { setNoti, setLoading } = useContext(Context);
   const [rows, setRows] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [id, setId] = useState(false);
   const [count, setCount] = useState({
     recibidas: 0,
     proceso: 0,
@@ -75,8 +83,9 @@ export default function RevalidacionEquivalencias() {
   const mapApiDataToRows = (apiData) => apiData.map((item) => ({
     ...item,
     estatusSolicitud:
-      ESTATUS_MAP[item.estatusSolicitudRevEquivId] || 'Desconocido',
-    nombre: `${item?.interesado?.persona?.nombre} ${item?.interesado?.persona?.apellidoPaterno
+        ESTATUS_MAP[item.estatusSolicitudRevEquivId] || 'Desconocido',
+    nombre: `${item?.interesado?.persona?.nombre} ${
+      item?.interesado?.persona?.apellidoPaterno
     } ${item?.interesado?.persona?.apellidoMaterno || ''}`,
     fecha: new Date(item.createdAt).toLocaleDateString(),
   }));
@@ -141,11 +150,61 @@ export default function RevalidacionEquivalencias() {
   const handleRevisar = (rowData) => {
     if (!rowData || !rowData.id) return;
 
-    const basePath = `/serviciosEscolares/revalidacionEquivalencias/${rowData.id}`;
-    const route = tipoConsultaId === 1
-      ? `${basePath}/Revalidacion/revisar`
-      : `${basePath}/Equivalencias/revisar`;
-    router.push(route);
+    setId(rowData.id);
+
+    if (rowData.estatusSolicitudRevEquivId === 2) {
+      const basePath = `/serviciosEscolares/revalidacionEquivalencias/${rowData.id}`;
+      const route = tipoConsultaId === 1
+        ? `${basePath}/Revalidacion/revisar`
+        : `${basePath}/Equivalencias/revisar`;
+
+      router.push(route);
+    } else {
+      setOpen(true);
+    }
+  };
+
+  const handleRevisarSuccess = async () => {
+    if (!id) return;
+    setOpen(false);
+    setLoading(true);
+
+    try {
+      const response = await updateRecord({
+        endpoint: `/solicitudesRevEquiv/${id}`,
+        data: { estatusSolicitudRevEquivId: 2 },
+      });
+
+      if (response.statusCode === 200 || response.statusCode === 201) {
+        setNoti({
+          open: true,
+          message: '¡Solicitud actualizada correctamente!',
+          type: 'success',
+        });
+
+        const basePath = `/serviciosEscolares/revalidacionEquivalencias/${id}`;
+        const route = tipoConsultaId === 1
+          ? `${basePath}/Revalidacion/revisar`
+          : `${basePath}/Equivalencias/revisar`;
+
+        router.push(route);
+      } else {
+        setNoti({
+          open: true,
+          message:
+            response.errorMessage || '¡Error al actualizar la solicitud!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      setNoti({
+        open: true,
+        message: '¡Error al procesar la solicitud!',
+        type: 'error',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleProcesar = (rowData) => {
@@ -220,6 +279,22 @@ export default function RevalidacionEquivalencias() {
           </Grid>
         </>
       )}
+      <DefaultModal
+        title="Confirmar envío a revisión"
+        open={open}
+        setOpen={setOpen}
+      >
+        Estás a punto de enviar esta solicitud al proceso de revisión. ¿Deseas
+        continuar?
+        <ButtonsForm
+          confirm={handleRevisarSuccess}
+          confirmText="Continuar"
+          cancel={() => {
+            setOpen(false);
+          }}
+          cancelText="Regresar"
+        />
+      </DefaultModal>
     </Grid>
   );
 }

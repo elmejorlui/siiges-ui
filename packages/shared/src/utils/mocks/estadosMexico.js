@@ -31,6 +31,7 @@ const estadosMexico = [
   { id: 30, nombre: 'Veracruz de Ignacio de la LLave' },
   { id: 31, nombre: 'Yucatán' },
   { id: 32, nombre: 'Zacatecas' },
+  { id: 33, nombre: 'Otro' },
 ];
 
 export default estadosMexico;

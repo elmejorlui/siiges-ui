@@ -7,9 +7,9 @@ import BasicSelect from '@siiges-ui/shared/src/components/Select';
 import PropTypes from 'prop-types';
 import errorDatosPlanEstudios from '../utils/sections/errors/errorDatosPlanEstudios';
 import SolicitudContext from '../utils/Context/solicitudContext';
-import modalidades from '../utils/Mocks/mockModalidades';
 import formDatosPlanEstudios from '../utils/sections/forms/formDatosPlanEstudios';
 import useSectionDisabled from './Hooks/useSectionDisabled';
+import modalidades from '../utils/Mocks/mockModalidades';
 
 export default function DatosPlanEstudios({ disabled, type, tipoSolicitudId }) {
   const [initialValues, setInitialValues] = useState({});
@@ -22,7 +22,7 @@ export default function DatosPlanEstudios({ disabled, type, tipoSolicitudId }) {
   }, []);
 
   const {
-    form, setForm, error, setError, setErrors, modalidad,
+    form, setForm, error, setError, setErrors,
   } = useContext(SolicitudContext);
   const isSectionDisabled = useSectionDisabled(1);
 
@@ -138,9 +138,12 @@ export default function DatosPlanEstudios({ disabled, type, tipoSolicitudId }) {
           <BasicSelect
             title="Modalidad"
             name="modalidadId"
-            value={modalidad || ''}
-            onfocus={handleInputFocus}
+            value={form[1].programa?.modalidadId || ''}
             options={modalidades}
+            onChange={handleOnChange}
+            onblur={handleOnBlur}
+            onfocus={handleInputFocus}
+            errorMessage={error.modalidadId}
             disabled
           />
         </Grid>
@@ -211,7 +214,11 @@ export default function DatosPlanEstudios({ disabled, type, tipoSolicitudId }) {
             title="Nivel Previo"
             name="antecedenteAcademico"
             options={antecedenteAcademico}
-            value={form[1].programa?.antecedenteAcademico || ''}
+            value={
+              Number.isInteger(form[1].programa?.antecedenteAcademico)
+                ? form[1].programa?.antecedenteAcademico
+                : parseInt(form[1].programa?.antecedenteAcademico || '', 10) || ''
+            }
             onChange={handleOnChange}
             onblur={handleOnBlur}
             onfocus={handleInputFocus}
@@ -221,46 +228,46 @@ export default function DatosPlanEstudios({ disabled, type, tipoSolicitudId }) {
           />
         </Grid>
         {tipoSolicitudId !== 3 && (
-        <>
-          <Grid item xs={12}>
-            <TextField
-              label="Objetivo General"
-              id="objetivoGeneral"
-              name="objetivoGeneral"
-              auto="objetivoGeneral"
-              value={form[1].programa?.objetivoGeneral || ''}
-              rows={4}
-              multiline
-              sx={{ width: '100%' }}
-              onChange={handleOnChange}
-              onBlur={handleOnBlur}
-              onFocus={handleInputFocus}
-              helperText={error.objetivoGeneral}
-              error={!!error.objetivoGeneral}
-              required
-              disabled={isDisabled}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Objetivo Particular"
-              id="objetivosParticulares"
-              name="objetivosParticulares"
-              auto="objetivosParticulares"
-              value={form[1].programa?.objetivosParticulares || ''}
-              rows={4}
-              multiline
-              sx={{ width: '100%' }}
-              onChange={handleOnChange}
-              onBlur={handleOnBlur}
-              onFocus={handleInputFocus}
-              helperText={error.objetivosParticulares}
-              error={!!error.objetivosParticulares}
-              required
-              disabled={isDisabled}
-            />
-          </Grid>
-        </>
+          <>
+            <Grid item xs={12}>
+              <TextField
+                label="Objetivo General"
+                id="objetivoGeneral"
+                name="objetivoGeneral"
+                auto="objetivoGeneral"
+                value={form[1].programa?.objetivoGeneral || ''}
+                rows={4}
+                multiline
+                sx={{ width: '100%' }}
+                onChange={handleOnChange}
+                onBlur={handleOnBlur}
+                onFocus={handleInputFocus}
+                helperText={error.objetivoGeneral}
+                error={!!error.objetivoGeneral}
+                required
+                disabled={isDisabled}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Objetivo Particular"
+                id="objetivosParticulares"
+                name="objetivosParticulares"
+                auto="objetivosParticulares"
+                value={form[1].programa?.objetivosParticulares || ''}
+                rows={4}
+                multiline
+                sx={{ width: '100%' }}
+                onChange={handleOnChange}
+                onBlur={handleOnBlur}
+                onFocus={handleInputFocus}
+                helperText={error.objetivosParticulares}
+                error={!!error.objetivosParticulares}
+                required
+                disabled={isDisabled}
+              />
+            </Grid>
+          </>
         )}
       </Grid>
       <DefaultModal title="Recordatorio" open={open} setOpen={setOpen}>

@@ -8,7 +8,7 @@ import {
 } from '@siiges-ui/serviciosescolares';
 import { useRouter } from 'next/router';
 import { useProgramaById } from '@siiges-ui/solicitudes';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box, Grid, Tab, Tabs, Typography,
 } from '@mui/material';
@@ -20,11 +20,53 @@ export default function EditPrograma() {
   const { query } = router;
   const programa = useProgramaById(query.id);
 
+  const [rules, setRules] = useState({
+    calificacionMinima: '',
+    calificacionMaxima: '',
+    calificacionAprobatoria: '',
+    calificacionDecimal: '2',
+  });
+
+  useEffect(() => {
+    if (programa) {
+      setRules({
+        calificacionMinima:
+          programa.calificacionMinima !== null && programa.calificacionMinima !== undefined
+            ? programa.calificacionMinima
+            : '',
+        calificacionMaxima:
+          programa.calificacionMaxima !== null && programa.calificacionMaxima !== undefined
+            ? programa.calificacionMaxima
+            : '',
+        calificacionAprobatoria:
+          programa.calificacionAprobatoria !== null && programa.calificacionAprobatoria
+          !== undefined
+            ? programa.calificacionAprobatoria
+            : '',
+        calificacionDecimal: programa.calificacionDecimal ? '1' : '2',
+      });
+    }
+  }, [programa]);
+
+  const handleRulesChange = (updatedRules) => {
+    setRules(updatedRules);
+  };
+
   const tabsConfig = [
     { label: 'Programa', component: <ProgramasData programa={programa} id={query.id} /> },
     { label: 'Ciclos Escolares', component: <CiclosEscolares /> },
     { label: 'Grupos', component: <Grupos /> },
-    { label: 'Reglas', component: <Reglas programa={programa} id={query.id} /> },
+    {
+      label: 'Reglas',
+      component: (
+        <Reglas
+          programa={programa}
+          id={query.id}
+          rules={rules}
+          onRulesChange={handleRulesChange}
+        />
+      ),
+    },
     { label: 'Asignaturas', component: <Asignaturas /> },
   ];
 

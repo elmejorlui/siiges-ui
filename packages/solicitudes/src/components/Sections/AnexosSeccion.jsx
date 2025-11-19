@@ -5,9 +5,16 @@ import PropTypes from 'prop-types';
 import useSectionDisabled from './Hooks/useSectionDisabled';
 
 export default function AnexosSeccion({
-  disabled, id, type, institucionId, usuarioId, plantelId, programaId, tipoSolicitudId,
+  disabled,
+  id,
+  type,
+  institucionId,
+  usuarioId,
+  plantelId,
+  programaId,
+  tipoSolicitudId,
 }) {
-  const [fileURLs, setFileURLs] = useState(Array(11).fill(null));
+  const [fileURLs, setFileURLs] = useState([]);
   const isSectionDisabled = useSectionDisabled(20);
   const isDisabled = disabled || isSectionDisabled;
 
@@ -50,7 +57,8 @@ export default function AnexosSeccion({
     },
     {
       tipoDocumento: 'SECRETARIA_SALUD',
-      label: 'Aviso funcionamiento de Secretaría de Salud ó Carta bajo protesta de decir verdad de NO venta de alimentos.',
+      label:
+        'Aviso funcionamiento de Secretaría de Salud ó Carta bajo protesta de decir verdad de NO venta de alimentos.',
       tipoEntidad: 'PLANTEL',
       entidad: () => plantelId,
     },
@@ -80,11 +88,10 @@ export default function AnexosSeccion({
     },
   ];
 
-  // Filtrar anexos según tipoSolicitudId
   const filteredDocumentos = useMemo(() => {
     if (tipoSolicitudId === 2) {
       const permitidos = [
-        'IDENTIFICACION_REPRESENTANTE', // Acta constitutiva
+        'IDENTIFICACION_REPRESENTANTE',
         'PROYECTO_VINCULACION',
         'PLAN_MEJORA',
         'PROGRAMA_SUPERACION',
@@ -92,23 +99,36 @@ export default function AnexosSeccion({
       return tiposDocumentos.filter((doc) => permitidos.includes(doc.tipoDocumento));
     }
     return tiposDocumentos;
-  }, [tipoSolicitudId, tiposDocumentos]);
+  }, [tipoSolicitudId]);
 
   useEffect(() => {
-    if ((type === 'editar' || type === 'consultar') && id) {
-      filteredDocumentos.forEach(({ tipoDocumento, tipoEntidad, entidad }, index) => {
-        GetFile({ tipoEntidad, tipoDocumento, entidadId: entidad() }, (url, err) => {
-          if (!err) {
-            setFileURLs((urls) => {
-              const updated = [...urls];
-              updated[index] = url;
-              return updated;
-            });
-          }
-        });
-      });
-    }
-  }, [type, id, institucionId, usuarioId, plantelId, programaId, filteredDocumentos]);
+    setFileURLs(Array(filteredDocumentos.length).fill(null));
+  }, [filteredDocumentos]);
+
+  useEffect(() => {
+    if ((type !== 'editar' && type !== 'consultar') || !id) return;
+
+    const fetchFiles = async () => {
+      await Promise.all(
+        filteredDocumentos.map(async ({ tipoDocumento, tipoEntidad, entidad }, index) => {
+          const entidadId = entidad();
+          if (!entidadId) return;
+
+          GetFile({ tipoEntidad, tipoDocumento, entidadId }, (url, err) => {
+            if (!err) {
+              setFileURLs((urls) => {
+                const updated = [...urls];
+                updated[index] = url;
+                return updated;
+              });
+            }
+          });
+        }),
+      );
+    };
+
+    fetchFiles();
+  }, [filteredDocumentos, type, id, institucionId, usuarioId, plantelId, programaId]);
 
   const handleFileLoaded = (index, url) => {
     setFileURLs((prev) => {
@@ -139,11 +159,11 @@ export default function AnexosSeccion({
               label={label}
             />
             {tipoDocumento === 'IDENTIFICACION_REPRESENTANTE' && (
-              <Typography variant="subtitle2">
-                En el caso de ser persona física anexar la Identificación oficial,
-                en el caso de contar con razón social o persona moral anexar el acta
-                constitutiva junto con su Identificación oficial.
-              </Typography>
+            <Typography variant="subtitle2" sx={{ mt: 1 }}>
+              En el caso de ser persona física anexar la Identificación oficial; en caso de
+              contar con razón social o persona moral, anexar el acta constitutiva junto con la
+              Identificación oficial del representante legal.
+            </Typography>
             )}
           </Grid>
         ))}
@@ -158,7 +178,7 @@ AnexosSeccion.defaultProps = {
   plantelId: null,
   usuarioId: null,
   programaId: null,
-  type: null,
+  type: 'crear',
 };
 
 AnexosSeccion.propTypes = {

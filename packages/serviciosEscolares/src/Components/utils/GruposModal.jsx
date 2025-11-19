@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Grid } from '@mui/material';
 import PropTypes from 'prop-types';
 import {
@@ -30,7 +30,22 @@ export default function GruposModal({
 }) {
   const title = type === 'new' ? 'Agregar Grupo' : 'Modificar Grupo';
   const { setNoti, setLoading } = useContext(Context);
-  const [form, setForm] = useState();
+
+  const [form, setForm] = useState({});
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (open) {
+      setForm({
+        descripcion: params?.cicloNombre === 'EQUIV' ? 'UNICO' : data?.descripcion || '',
+        turnoId: params?.cicloNombre === 'EQUIV' ? 1 : data?.turnoId || '',
+        generacion: data?.generacion || '',
+        generacionFechaInicio: data?.generacionFechaInicio || '',
+        generacionFechaFin: data?.generacionFechaFin || '',
+      });
+      setErrors({});
+    }
+  }, [open, data, params]);
 
   const safeSetFetchGrupos = (value) => {
     if (typeof setFetchGrupos === 'function') {
@@ -38,7 +53,21 @@ export default function GruposModal({
     }
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!form.descripcion?.trim()) newErrors.descripcion = 'La descripción es obligatoria';
+    if (!form.turnoId) newErrors.turnoId = 'El turno es obligatorio';
+    if (!form.generacion?.trim()) newErrors.generacion = 'La generación es obligatoria';
+    if (!form.generacionFechaInicio) newErrors.generacionFechaInicio = 'La fecha de inicio es obligatoria';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const pathGrupo = async (dataForm) => {
+    if (!validateForm()) return;
+
     setLoading(true);
     const equiv = params?.cicloNombre === 'EQUIV';
 
@@ -74,6 +103,9 @@ export default function GruposModal({
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
   };
 
   return (
@@ -85,10 +117,7 @@ export default function GruposModal({
           </Grid>
         )}
         <Grid item xs={4}>
-          <LabelData
-            title="Ciclo Escolar"
-            subtitle={params?.cicloNombre}
-          />
+          <LabelData title="Ciclo Escolar" subtitle={params?.cicloNombre} />
         </Grid>
         <Grid item xs={4}>
           <LabelData title="Grado" subtitle={params?.gradoNombre} />
@@ -101,19 +130,23 @@ export default function GruposModal({
             name="descripcion"
             auto="descripcion"
             onChange={handleOnChange}
-            value={params?.cicloNombre === 'EQUIV' ? 'UNICO' : data?.descripcion}
+            value={form.descripcion}
             disabled={params?.cicloNombre === 'EQUIV'}
+            required
+            errorMessage={errors.descripcion}
           />
         </Grid>
         <Grid item xs={4}>
           <Select
             title="Turno"
-            value={params?.cicloNombre === 'EQUIV' ? 1 : data?.turnoId}
+            value={form.turnoId}
             options={turnos}
             onChange={handleOnChange}
             id="turnoId"
             name="turnoId"
             disabled={params?.cicloNombre === 'EQUIV'}
+            required
+            errorMessage={errors.turnoId}
           />
         </Grid>
         <Grid item xs={4}>
@@ -123,7 +156,9 @@ export default function GruposModal({
             name="generacion"
             auto="generacion"
             onChange={handleOnChange}
-            value={data?.generacion}
+            value={form.generacion}
+            required
+            errorMessage={errors.generacion}
           />
         </Grid>
         <Grid item xs={6}>
@@ -134,7 +169,9 @@ export default function GruposModal({
             auto="generacionFechaInicio"
             onChange={handleOnChange}
             type="date"
-            value={data?.generacionFechaInicio}
+            value={form.generacionFechaInicio}
+            required
+            errorMessage={errors.generacionFechaInicio}
           />
         </Grid>
         <Grid item xs={6}>
@@ -145,14 +182,12 @@ export default function GruposModal({
             auto="generacionFechaFin"
             onChange={handleOnChange}
             type="date"
-            value={data?.generacionFechaFin}
+            value={form.generacionFechaFin}
           />
         </Grid>
         <Grid item xs={12} sx={{ mt: 2 }}>
           <ButtonsForm
-            confirm={() => {
-              pathGrupo(form);
-            }}
+            confirm={() => pathGrupo(form)}
             cancel={() => setOpen(false)}
           />
         </Grid>

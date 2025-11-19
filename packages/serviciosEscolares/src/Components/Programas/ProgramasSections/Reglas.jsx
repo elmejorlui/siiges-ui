@@ -1,4 +1,7 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, {
+  useState, useContext, useEffect,
+  useRef,
+} from 'react';
 import {
   TextField,
   MenuItem,
@@ -11,15 +14,18 @@ import {
   ButtonSimple, Context, updateRecord,
 } from '@siiges-ui/shared';
 
-export default function Reglas({ programa, id }) {
+export default function Reglas({
+  programa,
+  id,
+  rules,
+  onRulesChange,
+}) {
   const { setNoti, setLoading } = useContext(Context);
 
   const [form, setForm] = useState({
     id: id || '',
-    calificacionMinima: '',
-    calificacionMaxima: '',
-    calificacionAprobatoria: '',
-    calificacionDecimal: '',
+    solicitudId: programa?.solicitudId || '',
+    ...rules,
   });
 
   const [errors, setErrors] = useState({
@@ -37,26 +43,20 @@ export default function Reglas({ programa, id }) {
   });
 
   useEffect(() => {
-    if (programa) {
-      setForm({
-        id: id || '',
-        solicitudId: programa.solicitudId || '',
-        calificacionMinima: programa.calificacionMinima || '',
-        calificacionMaxima: programa.calificacionMaxima || '',
-        calificacionAprobatoria: programa.calificacionAprobatoria || '',
-        calificacionDecimal: programa.calificacionDecimal ? '1' : '2',
-      });
-    }
-  }, [programa]);
+    setForm((prevForm) => ({
+      ...prevForm,
+      ...rules,
+    }));
+  }, [rules]);
 
   const validateField = (name, value) => {
     let isValid = true;
     let message = '';
 
-    if (!value && value !== 0) {
+    if (value === '' || value === null || typeof value === 'undefined') {
       isValid = false;
       message = 'Este campo es requerido';
-    } else if (name !== 'calificacionDecimal' && Number.isNaN(value)) {
+    } else if (name !== 'calificacionDecimal' && Number.isNaN(Number(value))) {
       isValid = false;
       message = 'Debe ser un número válido';
     }
@@ -68,9 +68,38 @@ export default function Reglas({ programa, id }) {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setForm({ ...form, [name]: value });
+    const updatedForm = { ...form, [name]: value };
+    setForm(updatedForm);
     validateField(name, value);
+
+    const rulesUpdate = {
+      calificacionMinima: updatedForm.calificacionMinima,
+      calificacionMaxima: updatedForm.calificacionMaxima,
+      calificacionAprobatoria: updatedForm.calificacionAprobatoria,
+      calificacionDecimal: updatedForm.calificacionDecimal,
+    };
+    onRulesChange(rulesUpdate);
   };
+  const prevDecimalRef = useRef(form.calificacionDecimal);
+  useEffect(() => {
+    if (prevDecimalRef.current === form.calificacionDecimal) return;
+
+    const formatValue = (val) => {
+      if (val === '' || Number.isNaN(Number(val))) return '';
+      return form.calificacionDecimal === '1'
+        ? Number(val).toFixed(1)
+        : String(Math.trunc(Number(val)));
+    };
+
+    setForm((prev) => ({
+      ...prev,
+      calificacionMinima: formatValue(prev.calificacionMinima),
+      calificacionMaxima: formatValue(prev.calificacionMaxima),
+      calificacionAprobatoria: formatValue(prev.calificacionAprobatoria),
+    }));
+
+    prevDecimalRef.current = form.calificacionDecimal;
+  }, [form.calificacionDecimal]);
 
   const validateForm = () => {
     let isValid = true;
@@ -80,7 +109,11 @@ export default function Reglas({ programa, id }) {
     const fieldsToValidate = ['calificacionMinima', 'calificacionMaxima', 'calificacionAprobatoria', 'calificacionDecimal'];
 
     fieldsToValidate.forEach((field) => {
-      if (!form[field] && form[field] !== 0) {
+      if (
+        form[field] === ''
+        || form[field] === null
+        || typeof form[field] === 'undefined'
+      ) {
         newErrors[field] = true;
         newErrorMessages[field] = '¡Este campo es requerido!';
         isValid = false;
@@ -94,6 +127,13 @@ export default function Reglas({ programa, id }) {
 
   const formatToDecimal = (value) => parseFloat(value).toFixed(1);
 
+  const formatValue = (value) => {
+    if (value === '' || Number.isNaN(Number(value))) return '';
+    return form.calificacionDecimal === '1'
+      ? Number(value).toFixed(1)
+      : String(Math.trunc(Number(value)));
+  };
+
   const handleSubmit = async () => {
     if (!validateForm()) {
       setNoti({
@@ -104,7 +144,6 @@ export default function Reglas({ programa, id }) {
       return;
     }
 
-    setLoading(true);
     const dataBody = {
       programa: {
         calificacionMinima: form.calificacionDecimal === '1' ? formatToDecimal(form.calificacionMinima) : form.calificacionMinima,
@@ -145,11 +184,12 @@ export default function Reglas({ programa, id }) {
             label="Calificación Mínima"
             name="calificacionMinima"
             type="number"
-            value={form.calificacionMinima}
+            value={formatValue(form.calificacionMinima)}
             onChange={handleInputChange}
             error={errors.calificacionMinima}
             fullWidth
             required
+            inputProps={{ step: form.calificacionDecimal === '1' ? '0.1' : '1' }}
           />
           {errors.calificacionMinima && (
             <FormHelperText error>{errorMessages.calificacionMinima}</FormHelperText>
@@ -160,11 +200,12 @@ export default function Reglas({ programa, id }) {
             label="Calificación Máxima"
             name="calificacionMaxima"
             type="number"
-            value={form.calificacionMaxima}
+            value={formatValue(form.calificacionMaxima)}
             onChange={handleInputChange}
             error={errors.calificacionMaxima}
             fullWidth
             required
+            inputProps={{ step: form.calificacionDecimal === '1' ? '0.1' : '1' }}
           />
           {errors.calificacionMaxima && (
             <FormHelperText error>{errorMessages.calificacionMaxima}</FormHelperText>
@@ -175,11 +216,12 @@ export default function Reglas({ programa, id }) {
             label="Calificación Aprobatoria"
             name="calificacionAprobatoria"
             type="number"
-            value={form.calificacionAprobatoria}
+            value={formatValue(form.calificacionAprobatoria)}
             onChange={handleInputChange}
             error={errors.calificacionAprobatoria}
             fullWidth
             required
+            inputProps={{ step: form.calificacionDecimal === '1' ? '0.1' : '1' }}
           />
           {errors.calificacionAprobatoria && (
             <FormHelperText error>{errorMessages.calificacionAprobatoria}</FormHelperText>
@@ -220,4 +262,11 @@ Reglas.propTypes = {
     calificacionAprobatoria: PropTypes.number,
     calificacionDecimal: PropTypes.bool,
   }).isRequired,
+  rules: PropTypes.shape({
+    calificacionMinima: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    calificacionMaxima: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    calificacionAprobatoria: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    calificacionDecimal: PropTypes.string,
+  }).isRequired,
+  onRulesChange: PropTypes.func.isRequired,
 };

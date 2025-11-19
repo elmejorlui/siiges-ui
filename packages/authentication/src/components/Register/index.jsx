@@ -33,7 +33,7 @@ export default function Register() {
   const apikey = process.env.NEXT_PUBLIC_API_KEY;
 
   const correoPattern = /^[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Z]{2,}$/i;
-  const contrasenaPattern = /^(?!.* )(?=.*[a-z])(?=.*[A-Z])(?=.*?[0-9])(?=.*[@$!%*?&./])[A-Za-z0-9@$!%*?&./]{8,25}$/;
+  const contrasenaPattern = /^(?!.* )(?=.*[a-z])(?=.*[A-Z])(?=.*?[0-9])(?=.*[@$!%*?&./#])[A-Za-z0-9@$!%*?&./#]{8,25}$/;
 
   const validateForm = () => {
     const newErrors = {};

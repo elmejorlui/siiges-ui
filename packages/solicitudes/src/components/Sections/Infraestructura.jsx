@@ -46,23 +46,23 @@ export default function Infraestructura({ disabled, programaId, type }) {
       fetchData();
     }
   }, [plantelId, programaId, setInfraestructuras]);
-
   const rows = useMemo(
     () => infraestructuras.map((item) => ({
-      id: item.id,
-      tipoInstalacion: item.tipoInstalacion?.nombre,
-      instalacion: item.nombre,
-      capacidad: item.capacidad,
-      metros: item.metros,
-      recursos: item.recursos,
-      ubicacion: item.ubicacion,
-      asignaturas: item.asignaturasInfraestructura?.map(
-        (asignaturaInfra) => asignaturaInfra.asignatura?.clave,
-      ),
+      id: item?.id ?? '',
+      tipoInstalacion: item?.tipoInstalacion?.nombre ?? '',
+      instalacion: item?.nombre ?? '',
+      capacidad: item?.capacidad ?? '',
+      metros: item?.metros ?? '',
+      recursos: item?.recursos ?? '',
+      ubicacion: item?.ubicacion ?? '',
+      asignaturas: item?.asignaturasInfraestructura?.length
+        ? item.asignaturasInfraestructura
+          .map((asignaturaInfra) => asignaturaInfra.asignatura?.nombre ?? '')
+          .join(', ')
+        : '',
     })),
     [infraestructuras],
   );
-
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>

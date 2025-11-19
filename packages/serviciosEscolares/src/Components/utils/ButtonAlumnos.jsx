@@ -50,7 +50,7 @@ export default function ButtonsAlumnos({
   return (
     <>
       <Stack direction="row" spacing={1}>
-        <Link href={`/serviciosEscolares/alumnos/${id}/HistorialAlumno`} passHref>
+        <Link href={`/serviciosEscolares/alumnos/${id}/ConsultarAlumno`} passHref>
           <Tooltip title="Consultar" placement="top">
             <IconButton aria-label="Historial Académico del Alumno" component="a">
               <VisibilityOutlinedIcon />

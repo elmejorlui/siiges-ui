@@ -43,26 +43,34 @@ export default function AsignaturasEditModal({
         5: grados.flexibleCuatrimestral,
         6: grados.optativa,
       };
-
       const selectedGradeValue = cicloIdMap[form[1].programa.cicloId] || grados.semestral;
       setSelectedGrade(selectedGradeValue);
     }
   }, [form]);
 
   useEffect(() => {
-    const rowItemValues = {
-      id: rowItem.id,
-      gradoId: rowItem.gradoId,
-      areaId: rowItem.areaId,
-      nombre: rowItem.nombre,
-      clave: rowItem.clave,
-      creditos: rowItem.creditos,
-      academia: rowItem.academia,
-      seriacion: rowItem.seriacion,
-      horasDocente: rowItem.horasDocente,
-      horasIndependiente: rowItem.horasIndependiente,
-    };
-    setFormAsignaturas(rowItemValues);
+    if (rowItem) {
+      const cleanedSeriacion = rowItem.seriacion
+        ? rowItem.seriacion
+          .split(',')
+          .map((item) => item.trim())
+          .filter((item) => /^[A-Z0-9]+$/.test(item))
+        : [];
+
+      const rowItemValues = {
+        id: rowItem.id,
+        gradoId: rowItem.gradoId,
+        areaId: rowItem.areaId,
+        nombre: rowItem.nombre,
+        clave: rowItem.clave,
+        creditos: rowItem.creditos,
+        academia: rowItem.academia,
+        seriacion: cleanedSeriacion.join(','),
+        horasDocente: rowItem.horasDocente,
+        horasIndependiente: rowItem.horasIndependiente,
+      };
+      setFormAsignaturas(rowItemValues);
+    }
   }, [rowItem]);
 
   const handleOnChange = (e) => {
@@ -70,9 +78,14 @@ export default function AsignaturasEditModal({
 
     setFormAsignaturas((prevData) => ({
       ...prevData,
-      [name]: name === 'seriacion'
-        ? value.join(',')
-        : value,
+      [name]:
+        name === 'seriacion'
+          ? value
+            .filter(Boolean)
+            .map((v) => v.trim())
+            .filter((v) => /^[A-Z0-9]+$/.test(v))
+            .join(',')
+          : value,
     }));
   };
 
@@ -83,13 +96,13 @@ export default function AsignaturasEditModal({
 
   const handleOnSubmit = () => {
     const {
-      createdAt, deletedAt, updatedAt, ...submissionData
+      createdAt,
+      deletedAt,
+      updatedAt,
+      ...submissionData
     } = formAsignaturas;
 
-    const matchingGrade = selectedGrade.find(
-      (grade) => grade.id === submissionData.gradoId,
-    );
-
+    const matchingGrade = selectedGrade.find((grade) => grade.id === submissionData.gradoId);
     const updatedFormAsignaturas = matchingGrade
       ? { ...submissionData, grado: matchingGrade.nombre }
       : submissionData;
@@ -116,7 +129,7 @@ export default function AsignaturasEditModal({
           <BasicSelect
             title="Grado"
             name="gradoId"
-            value={rowItem.gradoId ?? ''}
+            value={formAsignaturas.gradoId ?? ''}
             options={selectedGrade}
             onChange={handleOnChange}
             onblur={handleOnBlur}
@@ -129,7 +142,7 @@ export default function AsignaturasEditModal({
           <BasicSelect
             title="Área"
             name="areaId"
-            value={rowItem.areaId ?? ''}
+            value={formAsignaturas.areaId ?? ''}
             options={area}
             onChange={handleOnChange}
             onblur={handleOnBlur}
@@ -144,7 +157,7 @@ export default function AsignaturasEditModal({
             label="Nombre(s)"
             name="nombre"
             auto="nombre"
-            value={rowItem.nombre}
+            value={formAsignaturas.nombre}
             onChange={handleOnChange}
             onblur={handleOnBlur}
             required
@@ -158,7 +171,7 @@ export default function AsignaturasEditModal({
             label="Clave"
             name="clave"
             auto="clave"
-            value={rowItem.clave}
+            value={formAsignaturas.clave}
             onChange={handleOnChange}
             onblur={handleOnBlur}
             required
@@ -172,7 +185,7 @@ export default function AsignaturasEditModal({
             label="Créditos"
             name="creditos"
             auto="creditos"
-            value={rowItem.creditos}
+            value={formAsignaturas.creditos}
             onChange={handleOnChange}
             onblur={handleOnBlur}
             required
@@ -185,11 +198,7 @@ export default function AsignaturasEditModal({
             title="Seriación"
             name="seriacion"
             multiple
-            value={
-              formAsignaturas.seriacion
-                ? formAsignaturas.seriacion.split(',')
-                : []
-            }
+            value={formAsignaturas.seriacion ? formAsignaturas.seriacion.split(',') : []}
             options={(asignaturasList || []).map((asig) => ({
               id: asig.clave,
               nombre: `${asig.nombre} | ${asig.clave}`,
@@ -204,7 +213,7 @@ export default function AsignaturasEditModal({
             label="Horas docente"
             name="horasDocente"
             auto="horasDocente"
-            value={rowItem.horasDocente}
+            value={formAsignaturas.horasDocente}
             onChange={handleOnChange}
             onblur={handleOnBlur}
             required
@@ -218,7 +227,7 @@ export default function AsignaturasEditModal({
             label="Horas independiente"
             name="horasIndependiente"
             auto="horasIndependiente"
-            value={rowItem.horasIndependiente}
+            value={formAsignaturas.horasIndependiente}
             onChange={handleOnChange}
             onblur={handleOnBlur}
             required
@@ -229,18 +238,11 @@ export default function AsignaturasEditModal({
       </Grid>
       <Grid container justifyContent="flex-end" marginTop={2}>
         <Grid item xs={2}>
-          <ButtonSimple
-            text={cancelButtonText}
-            design="enviar"
-            onClick={hideModal}
-          />
+          <ButtonSimple text={cancelButtonText} design="enviar" onClick={hideModal} />
         </Grid>
         {edit !== 'Consultar Asignatura' && (
           <Grid item xs={2}>
-            <ButtonSimple
-              text="Guardar"
-              onClick={handleOnSubmit}
-            />
+            <ButtonSimple text="Guardar" onClick={handleOnSubmit} />
           </Grid>
         )}
       </Grid>

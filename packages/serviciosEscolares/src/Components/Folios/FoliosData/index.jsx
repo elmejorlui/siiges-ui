@@ -1,6 +1,13 @@
 import Tooltip from '@mui/material/Tooltip';
 import {
-  Grid, Typography, Tabs, Tab, Box, IconButton,
+  Grid,
+  Typography,
+  Tabs,
+  Tab,
+  Box,
+  IconButton,
+  List,
+  Divider,
 } from '@mui/material';
 import {
   ButtonSimple,
@@ -11,7 +18,8 @@ import {
   GetFile,
   Input,
   InputFile,
-  LabelData,
+  ListTitle,
+  ListSubtitle,
   updateRecord,
 } from '@siiges-ui/shared';
 import React, { useContext, useEffect, useState } from 'react';
@@ -132,6 +140,32 @@ const modalidadTitulacion = [
   { id: 6, nombre: 'Otro' },
 ];
 
+const PERIODOS = {
+  1: 'Semestral',
+  2: 'Cuatrimestral',
+  3: 'Anual',
+  4: 'Semestral curriculum flexible',
+  5: 'Cuatrimestral curriculum flexible',
+};
+
+const MODALIDADES = {
+  1: 'Escolarizada',
+  2: 'No Escolarizada',
+  3: 'Mixta',
+  4: 'Dual',
+};
+
+const NIVEL = {
+  1: 'Bachillerato',
+  2: 'Licenciatura',
+  3: 'Técnico Superior Universitario',
+  4: 'Especialidad',
+  5: 'Maestría ',
+  6: 'Doctorado',
+  7: 'Profesional Asociado',
+  8: 'Educación Continua',
+};
+
 export default function FoliosData({ type }) {
   const { setNoti, loading, setLoading } = useContext(Context);
   const [url, setUrl] = useState(null);
@@ -159,6 +193,8 @@ export default function FoliosData({ type }) {
     acuerdoRvoe: '',
     planEstudios: '',
     gradoAcademico: '',
+    modalidades: '',
+    periodos: '',
   });
 
   const router = useRouter();
@@ -217,6 +253,8 @@ export default function FoliosData({ type }) {
             gradoAcademico: data.programa.nivelId,
             institucion: data.programa?.plantel?.institucion?.nombre,
             claveCentroTrabajo: data.programa?.plantel?.claveCentroTrabajo,
+            modalidades: data.programa?.modalidadId,
+            periodos: data.programa?.cicloId,
           });
           setIsSaved(true);
           setId(editId);
@@ -244,6 +282,8 @@ export default function FoliosData({ type }) {
             acuerdoRvoe: data.acuerdoRvoe,
             planEstudios: data.nombre,
             gradoAcademico: data.nivelId,
+            modalidades: data.modalidadId,
+            periodos: data.cicloId,
           });
         }
       } catch (error) {
@@ -278,14 +318,22 @@ export default function FoliosData({ type }) {
                 id: alumnos.id,
                 name: `${alumnos.alumno.persona.nombre} ${alumnos.alumno.persona.apellidoPaterno} ${alumnos.alumno.persona.apellidoMaterno}`,
                 matricula: alumnos.alumno.matricula,
-                fechaTerminacion: dayjs(alumnos.fechaTerminacion).format('DD/MM/YYYY'),
-                fechaElaboracion: dayjs(alumnos.fechaElaboracion).format('DD/MM/YYYY'),
+                fechaTerminacion: dayjs(alumnos.fechaTerminacion).format(
+                  'DD/MM/YYYY',
+                ),
+                fechaElaboracion: dayjs(alumnos.fechaElaboracion).format(
+                  'DD/MM/YYYY',
+                ),
                 fechaInicio: dayjs(alumnos.fechaInicio).format('DD/MM/YYYY'),
-                fundamento: fundamentoObj ? fundamentoObj.nombre : 'Desconocido',
+                fundamento: fundamentoObj
+                  ? fundamentoObj.nombre
+                  : 'Desconocido',
                 folio: alumnos.folioDocumentoAlumno?.folioDocumento,
                 foja: alumnos.folioDocumentoAlumno?.foja?.nombre,
                 libro: alumnos.folioDocumentoAlumno?.libro?.nombre,
-                titulacion: titulacionObj ? titulacionObj.nombre : 'Desconocido',
+                titulacion: titulacionObj
+                  ? titulacionObj.nombre
+                  : 'Desconocido',
               };
             });
 
@@ -356,10 +404,11 @@ export default function FoliosData({ type }) {
     try {
       const requestData = isSaved ? data : formData;
 
-      const response = isSaved ? await updateRecord({
-        data: requestData,
-        endpoint: `/solicitudesFolios/${id}`,
-      })
+      const response = isSaved
+        ? await updateRecord({
+          data: requestData,
+          endpoint: `/solicitudesFolios/${id}`,
+        })
         : await createRecord({
           data: requestData,
           endpoint: '/solicitudesFolios',
@@ -437,41 +486,53 @@ export default function FoliosData({ type }) {
           <Grid item xs={12}>
             <Typography variant="h6">Datos de la institución</Typography>
           </Grid>
-          <Grid item xs={8}>
-            <LabelData title="Institución" subtitle={etiquetas.institucion} />
-          </Grid>
-          <Grid item xs={4}>
-            <LabelData title="RVOE" subtitle={etiquetas.acuerdoRvoe} />
-          </Grid>
-          <Grid item xs={8}>
-            <LabelData
-              title="Grado Académico"
-              subtitle={etiquetas.gradoAcademico}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <LabelData
-              title="Plan de Estudios"
-              subtitle={etiquetas.planEstudios}
-            />
-          </Grid>
-          <Grid item xs={8}>
-            <LabelData
-              title="Clave de centro de trabajo"
-              subtitle={etiquetas.claveCentroTrabajo}
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <LabelData
-              title="Tipo de Documento"
-              subtitle={etiquetas.tipoDocumento}
-            />
-          </Grid>
           <Grid item xs={12}>
-            <LabelData
-              title="Tipo de Solicitud"
-              subtitle={etiquetas.tipoSolicitudFolio}
-            />
+            <Grid
+              container
+              rowSpacing={1}
+              columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+            >
+              <Grid container xs={6}>
+                <Grid item xs>
+                  <List>
+                    <ListTitle text="Institucion" />
+                    <ListTitle text="CCT" />
+                    <ListTitle text="Acuerdo RVOE" />
+                    <ListTitle text="Nivel" />
+                    <ListTitle text="Nombre del Programa" />
+                  </List>
+                </Grid>
+                <Divider orientation="vertical" flexItem sx={{ mx: 3 }} />
+                <Grid item xs>
+                  <List>
+                    <ListSubtitle text={etiquetas.institucion || 'N/A'} />
+                    <ListSubtitle text={etiquetas.claveCentroTrabajo || 'N/A'} />
+                    <ListSubtitle text={etiquetas.acuerdoRvoe || 'N/A'} />
+                    <ListSubtitle text={NIVEL[etiquetas.gradoAcademico] || 'N/A'} />
+                    <ListSubtitle text={etiquetas.planEstudios || 'N/A'} />
+                  </List>
+                </Grid>
+              </Grid>
+              <Grid container xs={5}>
+                <Grid item xs>
+                  <List>
+                    <ListTitle text="Modalidad" />
+                    <ListTitle text="Periodo" />
+                    <ListTitle text="Tipo de Documento" />
+                    <ListTitle text="Tipo de Solicitud" />
+                  </List>
+                </Grid>
+                <Divider orientation="vertical" flexItem sx={{ mx: 3 }} />
+                <Grid item xs>
+                  <List>
+                    <ListSubtitle text={MODALIDADES[etiquetas.modalidades] || 'N/A'} />
+                    <ListSubtitle text={PERIODOS[etiquetas.periodos] || 'N/A'} />
+                    <ListSubtitle text={etiquetas.tipoDocumento || 'N/A'} />
+                    <ListSubtitle text={etiquetas.tipoSolicitudFolio || 'N/A'} />
+                  </List>
+                </Grid>
+              </Grid>
+            </Grid>
           </Grid>
           <Grid item xs={4}>
             <Input
@@ -505,9 +566,11 @@ export default function FoliosData({ type }) {
               buttonText="Agregar Alumnos"
               title="Alumnos"
               rows={rows}
-              columns={tipoDocumento === '1'
-                ? columnsTitulo(handleEdit, handleConsult, status)
-                : columnsCertificado(handleEdit, handleConsult, status)}
+              columns={
+                tipoDocumento === '1'
+                  ? columnsTitulo(handleEdit, handleConsult, status)
+                  : columnsCertificado(handleEdit, handleConsult, status)
+              }
             />
           </Grid>
         </Grid>
@@ -515,7 +578,11 @@ export default function FoliosData({ type }) {
       <Grid container spacing={2} sx={{ mt: 1 }}>
         <Grid item xs={12}>
           {formData.estatusSolicitudFolioId === 2 ? (
-            <ButtonSimple design="error" text="Regresar" onClick={() => router.back()} />
+            <ButtonSimple
+              design="error"
+              text="Regresar"
+              onClick={() => router.back()}
+            />
           ) : (
             <ButtonsFolios
               save={handleConfirm}

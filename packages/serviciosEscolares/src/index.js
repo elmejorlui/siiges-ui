@@ -55,6 +55,7 @@ import FormFoliosAsignados from './Components/FoliosAsignados/FormFoliosAsignado
 import TitulosForm from './Components/Titulacion/TitulosForm/index';
 import TitulosTable from './Components/Titulacion/catalogoTitulosTable';
 import catalogoTitulos from './Tables/catalogoTitulosTable';
+import AlumnosData from './Components/Alumnos/AlumnosData';
 
 export {
   ExpedienteAlumno,
@@ -114,4 +115,5 @@ export {
   ReporteTable,
   ReporteForm,
   FormFoliosAsignados,
+  AlumnosData,
 };

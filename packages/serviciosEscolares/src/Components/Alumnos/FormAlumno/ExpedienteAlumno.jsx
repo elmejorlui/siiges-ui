@@ -1,4 +1,8 @@
-import { Grid, Typography } from '@mui/material';
+import {
+  Grid,
+  Typography,
+  List,
+} from '@mui/material';
 import {
   ButtonSimple,
   Context,
@@ -8,6 +12,8 @@ import {
   InputDate,
   InputFile,
   updateRecord,
+  ListTitle,
+  ListSubtitle,
 } from '@siiges-ui/shared';
 import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
@@ -26,9 +32,8 @@ export default function ExpedienteAlumno({ alumno, setAlumno, type }) {
     fechaResolucionParcial: '',
   });
 
-  // Cargar archivos y valores iniciales
   useEffect(() => {
-    if (type === 'edit' && id) {
+    if (id) {
       const filesToLoad = [
         { tipoDocumento: 'CERTIFICADO_PARCIAL_EQUIVALENCIA', setter: setCertificadoFile },
         { tipoDocumento: 'RESOLUCION_EQUIVALENCIA', setter: setResolucionFile },
@@ -51,7 +56,7 @@ export default function ExpedienteAlumno({ alumno, setAlumno, type }) {
         fechaResolucionParcial: equivalencia.fechaResolucion || '',
       });
     }
-  }, [id, type, equivalencia]);
+  }, [id, equivalencia]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,13 +75,11 @@ export default function ExpedienteAlumno({ alumno, setAlumno, type }) {
 
       let response;
       if (equivalencia?.id) {
-        // Actualizar
         response = await updateRecord({
           endpoint: `/equivalenciasInternas/${equivalencia.id}`,
           data: payload,
         });
       } else {
-        // Crear
         response = await createRecord({
           endpoint: '/equivalenciasInternas',
           data: payload,
@@ -84,7 +87,6 @@ export default function ExpedienteAlumno({ alumno, setAlumno, type }) {
       }
 
       if (response.statusCode === 200 || response.statusCode === 201) {
-        // 🔹 Actualizar alumno en estado padre
         setAlumno((prev) => ({
           ...prev,
           equivalencia: {
@@ -123,43 +125,68 @@ export default function ExpedienteAlumno({ alumno, setAlumno, type }) {
 
   return (
     <div style={{ padding: '20px' }}>
-      <Typography variant="body1" gutterBottom>
-        Asegúrese de subir un archivo legible.
-      </Typography>
-      <br />
-      <Grid container spacing={2}>
-        {/* Campos de texto */}
-        <Grid item xs={4}>
-          <Input
-            id="numeroExpediente"
-            name="numeroExpediente"
-            label="No. de Expediente"
-            value={expedienteInfo.numeroExpediente}
-            onChange={handleChange}
-          />
-        </Grid>
-        <Grid item xs={4}>
-          <Input
-            id="folioResolucionParcial"
-            name="folioResolucionParcial"
-            label="Folio de Resolución Parcial"
-            value={expedienteInfo.folioResolucionParcial}
-            onChange={handleChange}
-          />
-        </Grid>
-
-        {/* Campo de fecha */}
-        <Grid item xs={4}>
-          <InputDate
-            id="fechaResolucionParcial"
-            name="fechaResolucionParcial"
-            label="Fecha de Resolución Parcial"
-            value={expedienteInfo.fechaResolucionParcial}
-            onChange={handleChange}
-          />
-        </Grid>
-
-        {/* Archivos adicionales */}
+      {type === 'edit' && (
+        <>
+          <Typography variant="body1" gutterBottom>
+            Asegúrese de subir un archivo legible.
+          </Typography>
+          <br />
+        </>
+      )}
+      <Grid container spacing={2} alignItems="center">
+        {/* Campos */}
+        {type === 'edit' ? (
+          <>
+            <Grid item xs={4}>
+              <Input
+                id="numeroExpediente"
+                name="numeroExpediente"
+                label="No. de Expediente"
+                value={expedienteInfo.numeroExpediente}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <Input
+                id="folioResolucionParcial"
+                name="folioResolucionParcial"
+                label="Folio de Resolución Parcial"
+                value={expedienteInfo.folioResolucionParcial}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <InputDate
+                id="fechaResolucionParcial"
+                name="fechaResolucionParcial"
+                label="Fecha de Resolución Parcial"
+                value={expedienteInfo.fechaResolucionParcial}
+                onChange={handleChange}
+              />
+            </Grid>
+          </>
+        ) : (
+          <>
+            <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'flex-start' }}>
+              <List sx={{ textAlign: 'left' }}>
+                <ListTitle text="No. Expediente" />
+                <ListSubtitle text={expedienteInfo.numeroExpediente || 'N/A'} />
+              </List>
+            </Grid>
+            <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center' }}>
+              <List sx={{ textAlign: 'center' }}>
+                <ListTitle text="Folio de Resolución Parcial" />
+                <ListSubtitle text={expedienteInfo.folioResolucionParcial || 'N/A'} />
+              </List>
+            </Grid>
+            <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <List sx={{ textAlign: 'right' }}>
+                <ListTitle text="Fecha de Resolución Parcial" />
+                <ListSubtitle text={expedienteInfo.fechaResolucionParcial || 'N/A'} />
+              </List>
+            </Grid>
+          </>
+        )}
         <Grid item xs={12}>
           <InputFile
             tipoEntidad="ALUMNO"
@@ -168,6 +195,7 @@ export default function ExpedienteAlumno({ alumno, setAlumno, type }) {
             label="Certificado Parcial o Total (PDF)"
             url={certificadoFile}
             setUrl={setCertificadoFile}
+            disabled={type === 'view'}
           />
         </Grid>
         <Grid item xs={12}>
@@ -178,24 +206,27 @@ export default function ExpedienteAlumno({ alumno, setAlumno, type }) {
             label="Resolución Parcial (PDF)"
             url={resolucionFile}
             setUrl={setResolucionFile}
+            disabled={type === 'view'}
           />
         </Grid>
-
-        {/* Botones */}
-        <Grid item xs={9} />
-        <Grid item>
-          <ButtonSimple
-            text="Regresar"
-            design="enviar"
-            align="right"
-            onClick={() => {
-              router.back();
-            }}
-          />
-        </Grid>
-        <Grid item>
-          <ButtonSimple onClick={saveButtonAction} text="Guardar" />
-        </Grid>
+        {type === 'edit' && (
+          <>
+            <Grid item xs={9} />
+            <Grid item>
+              <ButtonSimple
+                text="Regresar"
+                design="enviar"
+                align="right"
+                onClick={() => {
+                  router.back();
+                }}
+              />
+            </Grid>
+            <Grid item>
+              <ButtonSimple onClick={saveButtonAction} text="Guardar" />
+            </Grid>
+          </>
+        )}
       </Grid>
     </div>
   );

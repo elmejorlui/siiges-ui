@@ -1,5 +1,9 @@
-import { Grid, Typography } from '@mui/material';
-import { Context, LabelData } from '@siiges-ui/shared';
+import {
+  Grid,
+  Typography,
+  Divider,
+} from '@mui/material';
+import { Context, ListTitle, ListSubtitle } from '@siiges-ui/shared';
 import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { HistorialTable } from '@siiges-ui/serviciosescolares';
@@ -10,6 +14,7 @@ export default function HistorialAcademico({ alumno, historial }) {
   useEffect(() => {
     setLoading(!alumno);
   }, [alumno, setLoading]);
+
   if (!alumno) {
     return null;
   }
@@ -32,34 +37,26 @@ export default function HistorialAcademico({ alumno, historial }) {
     .reduce((sum, r) => sum + Number(r?.asignatura?.creditos ?? 0), 0);
 
   return (
-    <Grid container spacing={1} sx={{ paddingTop: 3 }}>
-      <Grid item xs={12}>
-        <Typography variant="h6">Datos del Alumno</Typography>
-      </Grid>
-      <Grid item xs={4}>
-        <LabelData title="Matrícula" subtitle={alumno.matricula} />
-      </Grid>
-      <Grid item xs={4}>
-        <LabelData title="Situación" subtitle={alumno.situacionId} />
-      </Grid>
-      <Grid item xs={4}>
-        <LabelData
-          title="Créditos Obtenidos"
-          subtitle={`${creditosObtenidos} de ${totalCreditosPrograma}`}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <LabelData title="Apellido Paterno" subtitle={alumno.apellidoPaterno} />
-      </Grid>
-      <Grid item xs={4}>
-        <LabelData title="Apellido Materno" subtitle={alumno.apellidoMaterno} />
-      </Grid>
-      <Grid item xs={4}>
-        <LabelData title="Nombre" subtitle={alumno.nombre} />
-      </Grid>
-      <Grid item xs={12} sx={{ marginTop: 2 }}>
+    <Grid container spacing={2}>
+      <Grid item xs={6}>
         <Typography variant="h6">Calificaciones</Typography>
       </Grid>
+      <Grid
+        item
+        xs={6}
+        sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
+      >
+        <Grid container alignItems="center" sx={{ width: 'auto' }}>
+          <Grid item>
+            <ListTitle text="Créditos Obtenidos" />
+          </Grid>
+          <Divider orientation="vertical" flexItem sx={{ mx: 2 }} />
+          <Grid item>
+            <ListSubtitle text={`${creditosObtenidos} de ${totalCreditosPrograma}`} />
+          </Grid>
+        </Grid>
+      </Grid>
+
       <Grid item xs={12}>
         <HistorialTable alumno={historial} />
       </Grid>

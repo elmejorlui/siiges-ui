@@ -40,8 +40,19 @@ const handleCreate = (
   })
     .then((response) => response.json())
     .then((data) => {
-      const newData = { ...form, id: data.data.id };
-      setInfraestructuras((prevList) => [...prevList, newData]);
+      const newId = data.data.id;
+
+      return fetch(`${url}/api/v1/planteles/${plantelId}/infraestructuras/${newId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          api_key: apikey,
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    })
+    .then((res) => res.json())
+    .then((fullData) => {
+      setInfraestructuras((prevList) => [...prevList, fullData.data]);
       setForm({ plantelId });
       setInitialValues({});
       setNoti({

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import {
-  ButtonLogin, Context, Input, LinkButton,
+  ButtonLogin, Context, InputPassword, LinkButton,
 } from '@siiges-ui/shared';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -29,7 +29,7 @@ export default function NewPassword() {
   };
 
   const validatePassword = (password) => {
-    const regex = /^(?!.* )(?=.*[a-z])(?=.*[A-Z])(?=.*?[0-9])(?=.*[@$!%*?&./])[A-Za-z0-9@$!%*?&./]{8,25}$/;
+    const regex = /^(?!.* )(?=.*[a-z])(?=.*[A-Z])(?=.*?[0-9])(?=.*[@$!%*?&./#])[A-Za-z0-9@$!%*?&./#]{8,25}$/;
     return regex.test(password);
   };
 
@@ -130,7 +130,7 @@ export default function NewPassword() {
         }}
       >
         <Typography component="h1" variant="h5" sx={{ textAlign: 'center' }}>Recuperar contraseña</Typography>
-        <Input
+        <InputPassword
           label="Nueva contraseña"
           id="newPassword"
           name="newPassword"
@@ -140,7 +140,7 @@ export default function NewPassword() {
           type="password"
           value={passwords.newPassword}
         />
-        <Input
+        <InputPassword
           label="Repita la Nueva contraseña"
           id="repeatNewPassword"
           name="repeatNewPassword"

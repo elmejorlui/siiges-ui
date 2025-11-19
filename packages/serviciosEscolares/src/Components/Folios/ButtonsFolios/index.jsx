@@ -13,24 +13,35 @@ export default function ButtonsFolios({
   const [open, setOpen] = useState(false);
 
   return (
-    <Grid container justifyContent="flex-end" spacing={2}>
-      <Grid item>
-        <ButtonSimple text="Regresar" onClick={cancel} design="cancel" />
+    <Grid container spacing={2} alignItems="center">
+      <Grid item xs={12} sm={6}>
+        <ButtonSimple
+          text="Regresar"
+          onClick={cancel}
+          design="cancel"
+          align="left"
+        />
       </Grid>
-      {!disabled && (
-        !saved ? (
-          <Grid item>
-            <ButtonSimple text="Guardar" onClick={save} />
-          </Grid>
-        ) : (
-          <Grid item>
-            <ButtonSimple
-              text="Enviar Solicitud"
-              onClick={() => setOpen(true)}
-            />
-          </Grid>
-        )
-      )}
+
+      <Grid item xs={12} sm={6}>
+        <Grid container justifyContent="flex-end" spacing={2}>
+          {!disabled && (
+            !saved ? (
+              <Grid item>
+                <ButtonSimple text="Guardar" onClick={save} />
+              </Grid>
+            ) : (
+              <Grid item>
+                <ButtonSimple
+                  text="Enviar Solicitud"
+                  onClick={() => setOpen(true)}
+                />
+              </Grid>
+            )
+          )}
+        </Grid>
+      </Grid>
+
       <DefaultModal title="Enviar solicitud" open={open} setOpen={setOpen}>
         <Typography sx={{ mb: 2 }}>
           ¿Está seguro de enviar la solicitud? Una vez enviada, ya no podrá ser

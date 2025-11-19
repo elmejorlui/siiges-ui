@@ -291,7 +291,7 @@ export default function DatosInstitucion({
               id="nombreCarreraDestino"
               label="Nombre de la Carrera (Destino)"
               name="nombreCarrera"
-              value={carrera || ''}
+              value={carrera || form.interesado?.institucionDestino?.institucionDestinoPrograma?.programa?.nombre || ''}
               disabled
             />
           </Grid>
@@ -319,6 +319,7 @@ DatosInstitucion.propTypes = {
         institucionDestinoPrograma: PropTypes.shape({
           programaId: PropTypes.number,
           programa: PropTypes.shape({
+            nombre: PropTypes.string,
             acuerdoRvoe: PropTypes.string,
             plantel: PropTypes.shape({
               institucionId: PropTypes.number,

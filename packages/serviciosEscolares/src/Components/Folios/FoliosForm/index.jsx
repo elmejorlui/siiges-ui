@@ -4,245 +4,180 @@ import React, {
 import { Grid } from '@mui/material';
 import { Select, Context } from '@siiges-ui/shared';
 import PropTypes from 'prop-types';
-import {
-  getInstituciones,
-  getPlantelesByInstitucion,
-  getProgramas,
-} from '@siiges-ui/instituciones';
+import { getInstituciones, getPlantelesByInstitucion, getProgramas } from '@siiges-ui/instituciones';
 import getInstitucionIdFromSession from '../../utils/getInstitucionId';
-
-const LOCAL_STORAGE_KEY = 'foliosFormState';
 
 export default function FoliosForm({
   setTipoSolicitud,
   setTipoDocumento,
   setEstatus,
+  estatus,
   setPrograma,
   setPlantel,
+  setInstitucion,
   setLoading,
 }) {
-  const { instituciones } = getInstituciones({
-    esNombreAutorizado: true,
-    tipoInstitucionId: 1,
-    setLoading,
-  });
-
+  // eslint-disable-next-line max-len
+  const { instituciones } = getInstituciones({ esNombreAutorizado: true, tipoInstitucionId: 1, setLoading });
   const { setNoti, session } = useContext(Context);
 
   const isRepresentante = session?.rol === 'representante' || session?.rol === 'ce_ies';
-  const isAdmin = session?.rol === 'admin' || session?.rol === 'ce_sicyt';
+  const isAdminOrCeSicyt = session?.rol === 'admin' || session?.rol === 'ce_sicyt';
 
-  const initialState = typeof window !== 'undefined' && localStorage.getItem(LOCAL_STORAGE_KEY)
-    ? JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))
-    : {
-      selectedInstitucion: '',
-      selectedPlantel: '',
-      selectedPrograma: '',
-      selectedDocumento: '',
-      selectedSolicitud: '',
-    };
+  const initialState = {
+    selectedInstitucion: '',
+    selectedPlantel: '',
+    selectedPrograma: '',
+    selectedDocumento: '',
+    selectedSolicitud: '',
+  };
 
   const [state, setState] = useState(initialState);
-  const [arrays, setArrays] = useState({
-    planteles: [],
-    programas: [],
-  });
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
-    }
-  }, [state]);
+  const [arrays, setArrays] = useState({ planteles: [], programas: [] });
 
   useEffect(() => {
     const asignarInstitucionDesdeSesion = async () => {
-      if (isAdmin) return;
+      if (isAdminOrCeSicyt) return;
+      if (!instituciones || instituciones.length === 0 || !session) return;
 
-      const institucionId = await getInstitucionIdFromSession({
-        instituciones,
-        session,
-      });
-
+      const institucionId = await getInstitucionIdFromSession({ instituciones, session });
       if (institucionId) {
-        setState((prev) => ({
-          ...prev,
-          selectedInstitucion: institucionId,
-        }));
-        if (typeof window !== 'undefined') {
-          const stored = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '{}');
-          localStorage.setItem(
-            LOCAL_STORAGE_KEY,
-            JSON.stringify({ ...stored, selectedInstitucion: institucionId }),
-          );
-        }
+        setState((prev) => ({ ...prev, selectedInstitucion: institucionId }));
+        setInstitucion(institucionId);
       } else if (isRepresentante) {
-        setNoti({
-          open: true,
-          message: '¡No se encontró una institución con nombre autorizado asociada al usuario!',
-          type: 'error',
-        });
+        setNoti({ open: true, message: '¡No se encontró una institución asociada al usuario!', type: 'error' });
       }
     };
-
     asignarInstitucionDesdeSesion();
   }, [instituciones, session]);
-
-  const fetchProgramas = useCallback((plantelId) => {
-    getProgramas(plantelId, (error, data) => {
-      if (error) {
-        setNoti({
-          open: true,
-          message: `¡Error al obtener programas!: ${error.message}`,
-          type: 'error',
-        });
-        setArrays((prevState) => ({ ...prevState, programas: [] }));
-      } else if (data?.programas?.length) {
-        const transformedProgramas = data.programas.map((programa) => ({
-          id: programa.id,
-          nombre: `${programa.nombre || ''} ${programa.acuerdoRvoe || ''}`.trim(),
-        }));
-        setArrays((prevState) => ({ ...prevState, programas: transformedProgramas }));
-      }
-    });
-  }, [setNoti]);
 
   const fetchPlanteles = useCallback((institucionId) => {
     getPlantelesByInstitucion(institucionId, (error, data) => {
       if (error) {
-        setNoti({
-          open: true,
-          message: `¡Error al obtener planteles!: ${error.message}`,
-          type: 'error',
-        });
-        setArrays((prevState) => ({ ...prevState, planteles: [] }));
-      } else if (data?.planteles?.length) {
-        const transformedPlanteles = data.planteles.map((plantel) => ({
-          id: plantel.id,
-          nombre: `${plantel.domicilio.calle} ${plantel.domicilio.numeroExterior} | CCT: ${plantel.claveCentroTrabajo}`,
-        }));
-        setArrays((prevState) => ({ ...prevState, planteles: transformedPlanteles }));
+        setNoti({ open: true, message: `¡Error al obtener planteles!: ${error.message}`, type: 'error' });
+        setArrays((prev) => ({ ...prev, planteles: [] }));
+      } else {
+        const transformed = data?.planteles?.map((p) => ({
+          id: p.id,
+          nombre: `${p.domicilio.calle} ${p.domicilio.numeroExterior} | CCT: ${p.claveCentroTrabajo}`,
+        })) || [];
+        setArrays((prev) => ({ ...prev, planteles: transformed }));
       }
     });
   }, [setNoti]);
 
-  const handleInstitucionChange = (event) => {
-    const selectedInstitucion = event.target.value;
-    setState((prevState) => ({
-      ...prevState,
-      selectedInstitucion,
-      selectedPlantel: '',
+  const fetchProgramas = useCallback((PlantelId) => {
+    getProgramas(PlantelId, (error, data) => {
+      if (error) {
+        setNoti({ open: true, message: `¡Error al obtener programas!: ${error.message}`, type: 'error' });
+        setArrays((prev) => ({ ...prev, programas: [] }));
+      } else {
+        const transformed = data?.programas?.map((p) => ({
+          id: p.id,
+          nombre: `${p.nombre || ''} ${p.acuerdoRvoe || ''}`.trim(),
+        })) || [];
+        setArrays((prev) => ({ ...prev, programas: transformed }));
+      }
+    });
+  }, [setNoti]);
+
+  const handleInstitucionChange = (e) => {
+    const selectedInstitucion = e.target.value;
+    setState({ ...initialState, selectedInstitucion });
+    setInstitucion(selectedInstitucion);
+    setPlantel('');
+    setPrograma('');
+    setTipoDocumento('');
+    setTipoSolicitud('');
+  };
+
+  const handlePlantelChange = (e) => {
+    const selectedPlantel = e.target.value;
+    setState((prev) => ({
+      ...prev,
+      selectedPlantel,
       selectedPrograma: '',
+      selectedDocumento: '',
+      selectedSolicitud: '',
     }));
+    setPlantel(selectedPlantel);
+    setPrograma('');
+    setTipoDocumento('');
+    setTipoSolicitud('');
+    if (selectedPlantel) fetchProgramas(selectedPlantel);
+    else setArrays((prev) => ({ ...prev, programas: [] }));
   };
 
-  const handlePlantelChange = (event) => {
-    const plantelId = event.target.value;
-    setState((prevState) => ({
-      ...prevState,
-      selectedPlantel: plantelId,
-      selectedPrograma: '',
+  const handleProgramaChange = (e) => {
+    const selectedPrograma = e.target.value;
+    setState((prev) => ({
+      ...prev,
+      selectedPrograma,
+      selectedDocumento: '',
+      selectedSolicitud: '',
     }));
-    const selectedPlantelObject = arrays.planteles.find(
-      (plantel) => plantel.id === plantelId,
-    );
-    setPlantel(selectedPlantelObject?.nombre || '');
-    if (plantelId) {
-      fetchProgramas(plantelId);
-    } else {
-      setArrays((prevState) => ({ ...prevState, programas: [] }));
-    }
+    setPrograma(selectedPrograma);
+    setTipoDocumento('');
+    setTipoSolicitud('');
   };
 
-  const handleProgramaChange = (event) => {
-    const programaId = event.target.value;
-    setPrograma(programaId);
-    setState((prevState) => ({
-      ...prevState,
-      selectedPrograma: programaId,
-    }));
+  const handleDocumentoChange = (e) => {
+    const selectedDocumento = e.target.value;
+    setState((prev) => ({ ...prev, selectedDocumento, selectedSolicitud: '' }));
+    setTipoDocumento(selectedDocumento);
+    setTipoSolicitud('');
   };
 
-  const handleDocumentoChange = (event) => {
-    const tipoDocumento = event.target.value;
-    setTipoDocumento(tipoDocumento);
-    setState((prevState) => ({
-      ...prevState,
-      selectedDocumento: tipoDocumento,
-    }));
+  const handleSolicitudChange = (e) => {
+    const selectedSolicitud = e.target.value;
+    setState((prev) => ({ ...prev, selectedSolicitud }));
+    setTipoSolicitud(selectedSolicitud);
   };
 
-  const handleSolicitudChange = (event) => {
-    const tipoSolicitud = event.target.value;
-    setTipoSolicitud(tipoSolicitud);
-    setState((prevState) => ({
-      ...prevState,
-      selectedSolicitud: tipoSolicitud,
-    }));
+  const handleEstatusChange = (e) => {
+    const selectedIds = e.target.value || [];
+    setEstatus(selectedIds);
   };
-
-  useEffect(() => {
-    if (state.selectedInstitucion) {
-      fetchPlanteles(state.selectedInstitucion);
-    } else {
-      setArrays((prevState) => ({ ...prevState, planteles: [] }));
-    }
-  }, [state.selectedInstitucion, fetchPlanteles]);
-
-  useEffect(() => {
-    if (state.selectedPlantel) {
-      fetchProgramas(state.selectedPlantel);
-    } else {
-      setArrays((prevState) => ({ ...prevState, programas: [] }));
-    }
-  }, [state.selectedPlantel, fetchProgramas]);
-
-  useEffect(() => {
-    if (state.selectedDocumento) {
-      setTipoDocumento(state.selectedDocumento);
-    }
-  }, [state.selectedDocumento]);
-
-  useEffect(() => {
-    if (state.selectedSolicitud) {
-      setTipoSolicitud(state.selectedSolicitud);
-    }
-  }, [state.selectedSolicitud]);
-
-  useEffect(() => {
-    if (state.selectedPrograma) {
-      setPrograma(state.selectedPrograma);
-    }
-  }, [state.selectedPrograma]);
 
   const documentos = [
     { id: 1, nombre: 'Títulos' },
     { id: 2, nombre: 'Certificados' },
   ];
+
   const solicitudesTitulos = [
-    { id: 1, nombre: 'Total' },
-    { id: 3, nombre: 'Duplicado' },
+    { id: 1, nombre: 'Duplicado' },
+    { id: 3, nombre: 'Total' },
   ];
+
   const solicitudesCertificados = [
-    { id: 1, nombre: 'Total' },
+    { id: 1, nombre: 'Duplicado' },
     { id: 2, nombre: 'Parcial' },
-    { id: 3, nombre: 'Duplicado' },
+    { id: 3, nombre: 'Total' },
   ];
+
   const getSolicitudesOptions = () => {
-    if (state.selectedDocumento === 1) {
-      return solicitudesTitulos;
-    }
-    if (state.selectedDocumento === 2) {
-      return solicitudesCertificados;
-    }
+    if (state.selectedDocumento === 1) return solicitudesTitulos;
+    if (state.selectedDocumento === 2) return solicitudesCertificados;
     return [];
   };
 
-  const estatus = [
-    { id: 1, nombre: 'Enviado' },
+  const estatusOptions = [
+    { id: 1, nombre: 'En captura' },
     { id: 2, nombre: 'En revisión' },
-    { id: 3, nombre: 'Asignado' },
-    { id: 4, nombre: 'Cancelado' },
-  ];
+    { id: 3, nombre: 'Folios asignados' },
+    { id: 4, nombre: 'Con observaciones' },
+    { id: 5, nombre: 'Cancelado' },
+  ].filter((option) => !(session?.rol === 'ce_sicyt' && option.id === 1));
+
+  useEffect(() => {
+    if (state.selectedInstitucion) fetchPlanteles(state.selectedInstitucion);
+    else setArrays((prev) => ({ ...prev, planteles: [], programas: [] }));
+  }, [state.selectedInstitucion, fetchPlanteles]);
+
+  useEffect(() => {
+    if (state.selectedPlantel) fetchProgramas(state.selectedPlantel);
+    else setArrays((prev) => ({ ...prev, programas: [] }));
+  }, [state.selectedPlantel, fetchProgramas]);
 
   return (
     <Grid container spacing={2} alignItems="center">
@@ -253,7 +188,7 @@ export default function FoliosForm({
           value={state.selectedInstitucion}
           options={instituciones || []}
           onChange={handleInstitucionChange}
-          disabled={!isAdmin && isRepresentante}
+          disabled={!isAdminOrCeSicyt && isRepresentante}
         />
       </Grid>
       <Grid item xs={4}>
@@ -263,7 +198,7 @@ export default function FoliosForm({
           value={state.selectedPlantel}
           options={arrays.planteles || []}
           onChange={handlePlantelChange}
-          disabled={!isAdmin && !state.selectedInstitucion}
+          disabled={!state.selectedInstitucion}
         />
       </Grid>
       <Grid item xs={4}>
@@ -273,7 +208,7 @@ export default function FoliosForm({
           value={state.selectedPrograma}
           options={arrays.programas || []}
           onChange={handleProgramaChange}
-          disabled={!isAdmin && !state.selectedPlantel}
+          disabled={!state.selectedPlantel}
         />
       </Grid>
       <Grid item xs={4}>
@@ -281,9 +216,9 @@ export default function FoliosForm({
           title="Tipo de documento"
           name="documento"
           value={state.selectedDocumento}
-          options={documentos || []}
+          options={documentos}
           onChange={handleDocumentoChange}
-          disabled={!isAdmin && !state.selectedPrograma}
+          disabled={!state.selectedPrograma}
         />
       </Grid>
       <Grid item xs={4}>
@@ -291,22 +226,21 @@ export default function FoliosForm({
           title="Tipo de solicitud"
           name="solicitud"
           value={state.selectedSolicitud}
-          options={getSolicitudesOptions() || []}
+          options={getSolicitudesOptions()}
           onChange={handleSolicitudChange}
-          disabled={!isAdmin && !state.selectedPrograma}
+          disabled={!state.selectedDocumento}
         />
       </Grid>
-      {isAdmin && (
-        <Grid item xs={4}>
-          <Select
-            title="Estatus"
-            name="estatus"
-            multiple
-            options={estatus || []}
-            onChange={(event) => setEstatus(event.target.value)}
-          />
-        </Grid>
-      )}
+      <Grid item xs={4}>
+        <Select
+          title="Estatus"
+          name="estatus"
+          multiple
+          value={estatus}
+          options={estatusOptions}
+          onChange={handleEstatusChange}
+        />
+      </Grid>
     </Grid>
   );
 }
@@ -318,4 +252,10 @@ FoliosForm.propTypes = {
   setPlantel: PropTypes.func.isRequired,
   setLoading: PropTypes.func.isRequired,
   setEstatus: PropTypes.func.isRequired,
+  estatus: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.number, PropTypes.string])),
+  setInstitucion: PropTypes.func.isRequired,
+};
+
+FoliosForm.defaultProps = {
+  estatus: [],
 };

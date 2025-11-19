@@ -20,7 +20,12 @@ import {
 import alumnosService from '../../utils/alumnosService';
 import SituacionSelect from '../../utils/SituacionSelect';
 
-export default function FormAlumno({ type, alumno, setId }) {
+export default function FormAlumno({
+  type,
+  alumno,
+  setId,
+  onAlumnoUpdated,
+}) {
   const router = useRouter();
   const { query } = router;
   const [form, setForm] = useState();
@@ -39,7 +44,7 @@ export default function FormAlumno({ type, alumno, setId }) {
   };
 
   const findId = (param, search) => {
-    const Obj = param.find((n) => n.nombre === alumno[search]);
+    const Obj = param.find((n) => n.nombre === alumno?.[search]);
     return Obj ? Obj.id : '';
   };
 
@@ -106,11 +111,10 @@ export default function FormAlumno({ type, alumno, setId }) {
     let isValid = true;
     campos.forEach((field) => {
       const value = form?.[field.id] || alumno?.[field.id];
-
       if (
         field.id !== 'apellidoMaterno'
-      && field.type !== 'select'
-      && (!value || value.trim() === '')
+        && field.type !== 'select'
+        && (!value || value.trim() === '')
       ) {
         setNoti({
           open: true,
@@ -132,9 +136,8 @@ export default function FormAlumno({ type, alumno, setId }) {
 
     try {
       const dataBody = setAndValidateFormData({ ...form, ...query }).formData;
-      let response;
       if (type === 'edit') {
-        response = await alumnosService({
+        await alumnosService({
           id: query.alumnoId,
           dataBody,
           method: 'PATCH',
@@ -144,8 +147,9 @@ export default function FormAlumno({ type, alumno, setId }) {
           message: '¡Alumno actualizado con éxito!',
           type: 'success',
         });
+        if (onAlumnoUpdated) await onAlumnoUpdated();
       } else {
-        response = await alumnosService({ dataBody, method: 'POST' });
+        const response = await alumnosService({ dataBody, method: 'POST' });
         setId(response.data.id);
         setNoti({
           open: true,
@@ -153,13 +157,13 @@ export default function FormAlumno({ type, alumno, setId }) {
           type: 'success',
         });
       }
-      setLoading(false);
     } catch (err) {
       setNoti({
         open: true,
         message: `¡Error al registrar alumno! ${err.message}`,
         type: 'error',
       });
+    } finally {
       setLoading(false);
     }
   };
@@ -275,11 +279,18 @@ export default function FormAlumno({ type, alumno, setId }) {
 
 FormAlumno.propTypes = {
   type: PropTypes.string.isRequired,
-  setId: PropTypes.func.isRequired,
+  setId: PropTypes.func,
   alumno: PropTypes.shape({
     id: PropTypes.number,
     fechaRegistro: PropTypes.string,
     situacionId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     search: PropTypes.string,
-  }).isRequired,
+  }),
+  onAlumnoUpdated: PropTypes.func,
+};
+
+FormAlumno.defaultProps = {
+  alumno: null,
+  setId: null,
+  onAlumnoUpdated: null,
 };

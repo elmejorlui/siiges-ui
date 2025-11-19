@@ -1,6 +1,11 @@
 import React, { useContext } from 'react';
-import { DataTable, getData, Context } from '@siiges-ui/shared';
-import { Grid, Button } from '@mui/material';
+import {
+  DataTable,
+  getData,
+  Context,
+  ButtonSimple,
+} from '@siiges-ui/shared';
+import { Grid } from '@mui/material';
 import PropTypes from 'prop-types';
 import historialColumns from '../../../Tables/historialAlumnosTable';
 
@@ -69,14 +74,12 @@ export default function HistorialTable({ alumno }) {
   return (
     <Grid container sx={{ marginTop: 2 }}>
       <Grid item xs={12}>
-        <Button
-          variant="contained"
-          color="primary"
+        <ButtonSimple
           onClick={downloadHistorialAcademico}
-          sx={{ textTransform: 'none', fontWeight: 'bold' }}
-        >
-          Descargar
-        </Button>
+          text="Descargar"
+          align="left"
+          design="guardar"
+        />
       </Grid>
       <DataTable rows={rows} columns={historialColumns} title="Historial del Alumno" />
     </Grid>

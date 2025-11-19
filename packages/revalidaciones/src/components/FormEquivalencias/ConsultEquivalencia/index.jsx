@@ -1,6 +1,10 @@
 import { Grid } from '@mui/material';
-import { Context, getData, PositionDisplay } from '@siiges-ui/shared';
+import {
+  Context, getData, Input, PositionDisplay,
+  Subtitle,
+} from '@siiges-ui/shared';
 import React, { useContext, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import DatosSolicitante from '../Pages/DatosSolicitante';
 import DatosInstitucion from '../Pages/DatosInstitucion';
@@ -8,7 +12,11 @@ import CargaMateriasEquivalentes from '../Pages/CargaMateriasEquivalentes';
 import NavigationButtons from '../../../utils/NavigationButtons';
 import ConsultDocumentos from '../Pages/ConsultDocumentos';
 
-export default function ConsultEquivalencia() {
+export default function ConsultEquivalencia({
+  observaciones,
+  handleOnChange,
+  setEstatus,
+}) {
   const [currentPosition, setCurrentPosition] = useState(1);
   const router = useRouter();
   const { query } = router;
@@ -51,11 +59,17 @@ export default function ConsultEquivalencia() {
     fetchData();
   }, [query.id]);
 
+  useEffect(() => {
+    if (form?.estatusSolicitudRevEquivId) {
+      setEstatus(form.estatusSolicitudRevEquivId);
+    }
+  }, [form.estatusSolicitudRevEquivId]);
+
   if (error) {
     setNoti({
       open: true,
       message: error,
-      type: error,
+      type: 'error',
     });
   }
 
@@ -70,6 +84,8 @@ export default function ConsultEquivalencia() {
       setCurrentPosition((prevPosition) => prevPosition - 1);
     }
   };
+
+  const isObservacionesDisabled = ![2].includes(form.estatusSolicitudRevEquivId);
 
   const renderCurrentPage = () => {
     switch (currentPosition) {
@@ -120,6 +136,21 @@ export default function ConsultEquivalencia() {
         {renderCurrentPage()}
       </Grid>
       <Grid item xs={12}>
+        <Subtitle>Observaciones</Subtitle>
+      </Grid>
+      <Grid item xs={12}>
+        <Input
+          id="observaciones"
+          label="Observaciones"
+          name="observaciones"
+          multiline
+          rows={4}
+          value={observaciones?.observaciones || ''}
+          onChange={handleOnChange}
+          disabled={isObservacionesDisabled}
+        />
+      </Grid>
+      <Grid item xs={12}>
         <NavigationButtons
           currentPosition={currentPosition}
           totalPositions={totalPositions}
@@ -133,3 +164,15 @@ export default function ConsultEquivalencia() {
     </Grid>
   );
 }
+
+ConsultEquivalencia.propTypes = {
+  observaciones: PropTypes.shape({
+    observaciones: PropTypes.string,
+  }),
+  handleOnChange: PropTypes.func.isRequired,
+  setEstatus: PropTypes.func.isRequired,
+};
+
+ConsultEquivalencia.defaultProps = {
+  observaciones: { observaciones: '' },
+};
