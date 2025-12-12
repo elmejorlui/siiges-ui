@@ -2,6 +2,7 @@ import { Grid } from '@mui/material';
 import {
   Context, getData, Input, PositionDisplay,
   Subtitle,
+  updateRecord,
 } from '@siiges-ui/shared';
 import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
@@ -108,6 +109,61 @@ export default function ConsultEquivalencia({
     });
   };
 
+  const cleanPayload = (data) => {
+    if (Array.isArray(data)) {
+      return data.map(cleanPayload);
+    }
+
+    if (data !== null && typeof data === 'object') {
+      const {
+        createdAt, updatedAt, deletedAt, ...rest
+      } = data;
+      return Object.fromEntries(
+        Object.entries(rest).map(([key, value]) => [key, cleanPayload(value)]),
+      );
+    }
+
+    return data;
+  };
+
+  const handleOnSubmit = async () => {
+    try {
+      setLoading(true);
+
+      const payload = cleanPayload(form);
+
+      const response = await updateRecord({
+        endpoint: `/public/solicitudesRevEquiv?folioSolicitud=${form.folioSolicitud}`,
+        data: payload,
+      });
+
+      if (response.statusCode !== 201) {
+        setNoti({
+          open: true,
+          message: response.errorMessage || 'Error al actualizar la equivalencia',
+          type: 'error',
+        });
+        return;
+      }
+
+      setNoti({
+        open: true,
+        message: '¡Equivalencia actualizada correctamente!',
+        type: 'success',
+      });
+
+      router.back();
+    } catch (err) {
+      setNoti({
+        open: true,
+        message: err.message,
+        type: 'error',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const isObservacionesDisabled = ![2].includes(form.estatusSolicitudRevEquivId);
 
   const renderCurrentPage = () => {
@@ -188,9 +244,10 @@ export default function ConsultEquivalencia({
           totalPositions={totalPositions}
           onNext={handleNext}
           onPrevious={handlePrevious}
+          handleOnSubmit={handleOnSubmit}
           estatus={form.estatusSolicitudRevEquivId}
           id={form.id}
-          type="consult"
+          type={edit ? 'edit' : 'consult'}
         />
       </Grid>
     </Grid>

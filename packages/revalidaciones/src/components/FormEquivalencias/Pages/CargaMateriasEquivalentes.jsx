@@ -93,28 +93,28 @@ export default function CargaMateriasEquivalentes({
   const [editingId, setEditingId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const handleDelete = (id) => {
-    if (form?.interesado?.asignaturasAntecedentesEquivalentes) {
-      const updatedList = form.interesado.asignaturasAntecedentesEquivalentes.filter(
-        (_, index) => index !== id,
-      );
+  const listaAsignaturas = form?.interesado?.asignaturasAntecedenteEquivalente ?? [];
 
-      handleOnChange(
-        {
-          target: {
-            name: 'asignaturasAntecedentesEquivalentes',
-            value: updatedList,
-          },
+  const handleDelete = (id) => {
+    const updatedList = listaAsignaturas.filter((_, index) => index !== id);
+
+    handleOnChange(
+      {
+        target: {
+          name: 'asignaturasAntecedenteEquivalente',
+          value: updatedList,
         },
-        ['interesado'],
-      );
-    }
+      },
+      ['interesado'],
+    );
   };
 
   const handleEdit = (row) => {
-    const index = form.interesado.asignaturasAntecedentesEquivalentes.findIndex(
+    const index = listaAsignaturas.findIndex(
       (item) => item.asignaturaId === row.asignaturaId,
     );
+    if (index === -1) return;
+
     setEditingId(index);
     setIsEditing(true);
 
@@ -146,9 +146,7 @@ export default function CargaMateriasEquivalentes({
       calificacionAntecedente,
     };
 
-    const updatedList = [
-      ...form.interesado.asignaturasAntecedentesEquivalentes,
-    ];
+    const updatedList = [...listaAsignaturas];
 
     if (isEditing && editingId !== null) {
       updatedList[editingId] = newEntry;
@@ -159,7 +157,7 @@ export default function CargaMateriasEquivalentes({
     handleOnChange(
       {
         target: {
-          name: 'asignaturasAntecedentesEquivalentes',
+          name: 'asignaturasAntecedenteEquivalente',
           value: updatedList,
         },
       },
@@ -170,49 +168,17 @@ export default function CargaMateriasEquivalentes({
   };
 
   useEffect(() => {
-    if (form?.interesado?.asignaturasAntecedentesEquivalentes) {
-      setRows(
-        form.interesado.asignaturasAntecedentesEquivalentes.map(
-          (item, index) => ({
-            id: index,
-            asignaturaId: item.asignaturaId,
-            materiasAntecedente: item.nombreAsignaturaAntecedente,
-            calificacionAntecedente: item.calificacionAntecedente,
-            materiasEquivalentes: item.nombreAsignaturaEquivalente,
-            calificacionEquivalente: item.calificacionEquivalente,
-          }),
-        ),
-      );
-    } else if (form?.interesado?.asignaturasAntecedenteEquivalente) {
-      setRows(
-        form.interesado.asignaturasAntecedenteEquivalente.map(
-          (item, index) => ({
-            id: index,
-            asignaturaId: item.asignaturaId,
-            materiasAntecedente: item.nombreAsignaturaAntecedente,
-            calificacionAntecedente: item.calificacionAntecedente,
-            materiasEquivalentes: item.nombreAsignaturaEquivalente,
-            calificacionEquivalente: item.calificacionEquivalente,
-          }),
-        ),
-      );
-    }
-  }, [form]);
-
-  useEffect(() => {
-    if (asignaturaId && materiasList?.length > 0) {
-      const selectedMateria = materiasList.find(
-        (materia) => materia.id === parseInt(asignaturaId, 10),
-      );
-      if (selectedMateria) {
-        setMateriaEquivalente(selectedMateria.nombre);
-      } else {
-        setMateriaEquivalente('');
-      }
-    } else {
-      setMateriaEquivalente('');
-    }
-  }, [asignaturaId, materiasList]);
+    setRows(
+      listaAsignaturas.map((item, index) => ({
+        id: index,
+        asignaturaId: item.asignaturaId,
+        materiasAntecedente: item.nombreAsignaturaAntecedente,
+        calificacionAntecedente: item.calificacionAntecedente,
+        materiasEquivalentes: item.nombreAsignaturaEquivalente,
+        calificacionEquivalente: item.calificacionEquivalente,
+      })),
+    );
+  }, [listaAsignaturas]);
 
   useEffect(() => {
     if (
@@ -237,9 +203,7 @@ export default function CargaMateriasEquivalentes({
   ]);
 
   const materiasDisponibles = materiasList?.filter((materia) => {
-    const usados = form?.interesado?.asignaturasAntecedentesEquivalentes?.map(
-      (item) => item.asignaturaId,
-    ) || [];
+    const usados = listaAsignaturas.map((item) => item.asignaturaId);
 
     if (isEditing && asignaturaId) {
       return !usados.includes(materia.id) || materia.id === asignaturaId;
@@ -399,15 +363,6 @@ CargaMateriasEquivalentes.defaultProps = {
 CargaMateriasEquivalentes.propTypes = {
   form: PropTypes.shape({
     interesado: PropTypes.shape({
-      asignaturasAntecedentesEquivalentes: PropTypes.arrayOf(
-        PropTypes.shape({
-          asignaturaId: PropTypes.number,
-          nombreAsignaturaEquivalente: PropTypes.string,
-          calificacionEquivalente: PropTypes.string,
-          nombreAsignaturaAntecedente: PropTypes.string,
-          calificacionAntecedente: PropTypes.string,
-        }),
-      ),
       asignaturasAntecedenteEquivalente: PropTypes.arrayOf(
         PropTypes.shape({
           asignaturaId: PropTypes.number,

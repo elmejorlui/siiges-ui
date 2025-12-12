@@ -210,6 +210,17 @@ export default function NavigationButtons({
             </Grid>
             )}
 
+            {currentPosition === totalPositions && type === 'edit' && (
+            <Grid item>
+              <ButtonSimple
+                text="Editar"
+                design="enviar"
+                onClick={handleOnSubmit}
+                disabled={isSubmitting}
+              />
+            </Grid>
+            )}
+
             {estatus === 4 && currentPosition === totalPositions && (
             <Grid item>
               <ButtonSimple
