@@ -20,8 +20,14 @@ export default function AnexosSeccion({
 
   const tiposDocumentos = [
     {
+      tipoDocumento: 'IDENTIFICACION_OFICIAL_CON_FOTOGRAFIA',
+      label: 'Identificación oficial con fotografía',
+      tipoEntidad: 'REPRESENTANTE',
+      entidad: () => usuarioId,
+    },
+    {
       tipoDocumento: 'IDENTIFICACION_REPRESENTANTE',
-      label: 'Identificación oficial con fotografía / Acta constitutiva',
+      label: 'Acta constitutiva',
       tipoEntidad: 'REPRESENTANTE',
       entidad: () => usuarioId,
     },
@@ -64,7 +70,7 @@ export default function AnexosSeccion({
     },
     {
       tipoDocumento: 'COMPROBANTE_TELEFONO',
-      label: 'Comprobante de línea telefónica',
+      label: 'Documento de Protección Civil',
       tipoEntidad: 'PLANTEL',
       entidad: () => plantelId,
     },
