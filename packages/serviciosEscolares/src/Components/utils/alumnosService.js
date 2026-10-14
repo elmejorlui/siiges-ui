@@ -64,6 +64,8 @@ export default async function alumnosService({ id, dataBody, method }) {
     equivalenciaId: data?.equivalencia?.id,
     equivalencia: data?.equivalencia,
     alumnoCicloIngreso: data?.alumnoCicloIngreso,
+    estatusServicioSocial: data?.estatusServicioSocial,
+    observacionesServicioSocial: data?.observacionesServicioSocial,
   };
 
   return { data, dataForm };
