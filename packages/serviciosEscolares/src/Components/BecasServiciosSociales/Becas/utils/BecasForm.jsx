@@ -1,5 +1,5 @@
 import { Grid } from '@mui/material';
-import { getInstituciones } from '@siiges-ui/instituciones';
+import { getInstitucionesOpciones } from '@siiges-ui/instituciones';
 import { Select, useAuth, useUI } from '@siiges-ui/shared';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
@@ -34,7 +34,7 @@ export default function BecasForm({ setBecas, setInstitucion }) {
     ciclos: [],
   });
   const isAdmin = session.rol === 'admin' || session.rol === 'ce_sicyt';
-  const { instituciones } = getInstituciones({
+  const { instituciones } = getInstitucionesOpciones({
     esNombreAutorizado: true,
     tipoInstitucionId: 1,
     setLoading,

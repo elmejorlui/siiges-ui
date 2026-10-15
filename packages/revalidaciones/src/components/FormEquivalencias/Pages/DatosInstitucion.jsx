@@ -49,7 +49,7 @@ export default function DatosInstitucion({
   useEffect(() => {
     if (!tipoInstitucionId) return;
     fetchData(
-      `${domain}/api/v1/public/instituciones?tipoInstitucionId=${tipoInstitucionId}`,
+      `${domain}/api/v1/public/instituciones/opciones?tipoInstitucionId=${tipoInstitucionId}`,
       setInstituciones,
     );
   }, [tipoInstitucionId]);

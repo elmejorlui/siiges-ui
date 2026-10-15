@@ -5,7 +5,7 @@ import React from 'react';
 
 export default function InstitucionesCarousel({ opdType }) {
   const { data, loading } = useApi({
-    endpoint: 'api/v1/instituciones/?tipoInstitucionId=2',
+    endpoint: 'api/v1/instituciones/opciones?tipoInstitucionId=2',
   });
 
   let url = '/opds/fortalecimiento/planMaestro/';
