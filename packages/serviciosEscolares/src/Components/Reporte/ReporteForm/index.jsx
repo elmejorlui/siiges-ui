@@ -5,7 +5,7 @@ import {
 } from '@siiges-ui/shared';
 import PropTypes from 'prop-types';
 import {
-  getInstituciones,
+  getInstitucionesOpciones,
   getPlantelesByInstitucion,
   getProgramas,
 } from '@siiges-ui/instituciones';
@@ -16,7 +16,7 @@ const ROLES_INSTITUCION_FIJA = ['representante', 'ce_ies', 'avances_sicyt'];
 export default function ReporteForm({
   setInstitucion, setAlumnos, setPrograma, setLoading, setCicloEscolar, setPlantel,
 }) {
-  const { instituciones: fetchedInstituciones } = getInstituciones({
+  const { instituciones: fetchedInstituciones } = getInstitucionesOpciones({
     esNombreAutorizado: true,
     tipoInstitucionId: 1,
     setLoading,

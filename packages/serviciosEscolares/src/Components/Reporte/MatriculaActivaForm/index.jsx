@@ -4,7 +4,7 @@ import {
   BinarySelect, ButtonSimple, Select, useAuth, useUI,
 } from '@siiges-ui/shared';
 import {
-  getInstituciones,
+  getInstitucionesOpciones,
   getPlantelesByInstitucion,
   getProgramas,
 } from '@siiges-ui/instituciones';
@@ -24,7 +24,7 @@ export default function MatriculaActivaForm({
 }) {
   const { setNoti } = useUI();
   const { session } = useAuth();
-  const { instituciones } = getInstituciones({
+  const { instituciones } = getInstitucionesOpciones({
     esNombreAutorizado: true,
     tipoInstitucionId: 1,
     setLoading,

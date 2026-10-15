@@ -2,7 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Grid } from '@mui/material';
 import { Select, useAuth, useUI } from '@siiges-ui/shared';
 import PropTypes from 'prop-types';
-import { getInstituciones, getPlantelesByInstitucion, getProgramas } from '@siiges-ui/instituciones';
+import {
+  getInstitucionesOpciones, getPlantelesByInstitucion, getProgramas,
+} from '@siiges-ui/instituciones';
 import getInstitucionIdFromSession from '../../utils/getInstitucionId';
 
 export default function FoliosForm({
@@ -15,7 +17,7 @@ export default function FoliosForm({
   setLoading,
   tipoDocumento,
 }) {
-  const { instituciones } = getInstituciones({
+  const { instituciones } = getInstitucionesOpciones({
     esNombreAutorizado: true,
     tipoInstitucionId: 1,
     setLoading,

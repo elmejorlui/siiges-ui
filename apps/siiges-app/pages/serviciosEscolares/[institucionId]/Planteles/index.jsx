@@ -1,21 +1,23 @@
-import { PlantelesInstitucionesAuth, getInstituciones } from '@siiges-ui/instituciones';
+import { useRouter } from 'next/router';
+import { PlantelesInstitucionesAuth } from '@siiges-ui/instituciones';
 import React from 'react';
-import { Layout } from '@siiges-ui/shared';
+import { Layout, useApi } from '@siiges-ui/shared';
 
 export default function Index() {
-  const { institucion, loading } = getInstituciones({
-    esNombreAutorizado: true,
-    tipoInstitucionId: 1,
+  const router = useRouter();
+  const { institucionId } = router.query;
+  const { data: institucion, loading } = useApi({
+    endpoint: institucionId ? `api/v1/instituciones/${institucionId}/planteles` : '',
   });
 
   return (
     <Layout title="Planteles">
-      {loading ? (
+      {!loading && institucion && (
         <PlantelesInstitucionesAuth
-          institucion={institucion.data.id}
-          data={institucion.data.planteles}
+          institucion={institucion.id}
+          data={institucion.planteles || []}
         />
-      ) : null}
+      )}
     </Layout>
   );
 }

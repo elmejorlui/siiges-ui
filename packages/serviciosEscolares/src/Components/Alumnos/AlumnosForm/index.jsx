@@ -5,7 +5,7 @@ import { Grid } from '@mui/material';
 import { Select, useAuth, useUI } from '@siiges-ui/shared';
 import PropTypes from 'prop-types';
 import {
-  getInstituciones,
+  getInstitucionesOpciones,
   getPlantelesByInstitucion,
   getProgramas,
 } from '@siiges-ui/instituciones';
@@ -18,7 +18,7 @@ export default function AlumnosForm({
   setLoading,
   setPermisoAlumno,
 }) {
-  const { instituciones } = getInstituciones({
+  const { instituciones } = getInstitucionesOpciones({
     esNombreAutorizado: true,
     tipoInstitucionId: 1,
     setLoading,

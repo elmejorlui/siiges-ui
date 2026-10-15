@@ -3,7 +3,7 @@ import { Grid } from '@mui/material';
 import { Select, useAuth, useUI } from '@siiges-ui/shared';
 import PropTypes from 'prop-types';
 import {
-  getInstituciones,
+  getInstitucionesOpciones,
   getPlantelesByInstitucion,
   getProgramas,
 } from '@siiges-ui/instituciones';
@@ -13,7 +13,7 @@ import getInstitucionIdFromSession from '../../utils/getInstitucionId';
 export default function ValidacionForm({
   setInstitucion, setAlumnos, setPrograma, setLoading,
 }) {
-  const { instituciones: fetchedInstituciones } = getInstituciones({
+  const { instituciones: fetchedInstituciones } = getInstitucionesOpciones({
     esNombreAutorizado: true,
     tipoInstitucionId: 1,
     setLoading,
