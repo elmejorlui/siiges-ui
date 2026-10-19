@@ -1,4 +1,4 @@
-import { getTokenLocalStorage } from "@siiges-ui/shared";
+import { getTokenLocalStorage } from '@siiges-ui/shared';
 
 const ERROR_MAPPING = {
   400: '¡Revisa que los campos sean correctos!',

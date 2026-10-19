@@ -16,6 +16,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import AssignmentLateIcon from '@mui/icons-material/AssignmentLate';
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremiumOutlined';
 import CoPresentOutlinedIcon from '@mui/icons-material/CoPresentOutlined';
+import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import { USERS_ROUTE } from '../../../constants/routes';
 
 const SPECIAL_ACCESS = {
@@ -138,6 +139,20 @@ const panelMenuOptions = (rol, nombre, userId) => {
         icon: <AssignmentTurnedInIcon />,
         route: '/serviciosEscolares/validacion',
         key: 'validacion',
+      },
+      {
+        userId: 2,
+        text: 'Servicio Social',
+        icon: <VolunteerActivismIcon />,
+        route: '/serviciosEscolares/servicioSocial/alumnos',
+        key: 'servicioSocialAlumnos',
+      },
+      {
+        userId: 2,
+        text: 'Reportes Servicio Social',
+        icon: <AssignmentLateIcon />,
+        route: '/serviciosEscolares/servicioSocial/reportes',
+        key: 'servicioSocialReportes',
       },
       {
         userId: 2,
@@ -410,18 +425,42 @@ const optionsMenuFilter = {
   ],
   serv_soc_ies: [
     {
-      text: 'Servicio Social',
+      text: 'Servicio Social (Solicitudes)',
       icon: <DescriptionIcon />,
       route: '/serviciosEscolares/servicioSocial',
       key: 'servicioSocial',
     },
+    {
+      text: 'Servicio Social (Alumnos)',
+      icon: <VolunteerActivismIcon />,
+      route: '/serviciosEscolares/servicioSocial/alumnos',
+      key: 'servicioSocialAlumnos',
+    },
+    {
+      text: 'Reportes Servicio Social',
+      icon: <AssignmentLateIcon />,
+      route: '/serviciosEscolares/servicioSocial/reportes',
+      key: 'servicioSocialReportes',
+    },
   ],
   serv_soc_sicyt: [
     {
-      text: 'Servicio Social',
+      text: 'Servicio Social (Solicitudes)',
       icon: <DescriptionIcon />,
       route: '/serviciosEscolares/servicioSocial',
       key: 'servicioSocial',
+    },
+    {
+      text: 'Servicio Social (Alumnos)',
+      icon: <VolunteerActivismIcon />,
+      route: '/serviciosEscolares/servicioSocial/alumnos',
+      key: 'servicioSocialAlumnos',
+    },
+    {
+      text: 'Reportes Servicio Social',
+      icon: <AssignmentLateIcon />,
+      route: '/serviciosEscolares/servicioSocial/reportes',
+      key: 'servicioSocialReportes',
     },
   ],
   equiv_sicyt: [

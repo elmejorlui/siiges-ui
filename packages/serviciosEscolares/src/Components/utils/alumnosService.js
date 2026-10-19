@@ -61,6 +61,8 @@ export default async function alumnosService({ id, dataBody, method }) {
     situacionId: data?.situacionId,
     fechaRegistro: data?.createdAt?.split('T')[0],
     tipoTramiteId: data?.tipoTramiteId,
+    estatusServicioSocial: data?.estatusServicioSocial,
+    observacionesServicioSocial: data?.observacionesServicioSocial,
     equivalenciaId: data?.equivalencia?.id,
     equivalencia: data?.equivalencia,
     alumnoCicloIngreso: data?.alumnoCicloIngreso,
