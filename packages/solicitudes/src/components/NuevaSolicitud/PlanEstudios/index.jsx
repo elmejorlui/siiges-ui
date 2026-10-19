@@ -191,16 +191,32 @@ export default function PlanEstudios({
   const allowedSections = useMemo(() => {
     const modalidadNumber = Number(modalidad) || 0;
     const baseLength = modalidadNumber === 1 ? 9 : 10;
-    const base = Array.from({ length: baseLength }, (_, i) => i + 1);
+
+    const base = Array.from(
+      { length: baseLength },
+      (_, i) => i + 1,
+    );
+
+    const minimoCreditosOptativas = Number(
+      form?.[1]?.programa?.minimoCreditosOptativas,
+    );
+
+    const mostrarSeccionElectiva = minimoCreditosOptativas !== 0;
 
     if (tipoSolicitudId === 3) {
-      return [1, 2, 6, 7];
+      return mostrarSeccionElectiva
+        ? [1, 2, 6, 7]
+        : [1, 2, 6];
     }
+
     if (tipoSolicitudId === 2) {
       return [1, 5, 8];
     }
-    return base;
-  }, [modalidad, tipoSolicitudId]);
+
+    return mostrarSeccionElectiva
+      ? base
+      : base.filter((sectionNumber) => sectionNumber !== 7);
+  }, [modalidad, tipoSolicitudId, form?.[1]?.programa?.minimoCreditosOptativas]);
 
   const [sectionLength, setSectionLength] = useState(allowedSections.length);
 
