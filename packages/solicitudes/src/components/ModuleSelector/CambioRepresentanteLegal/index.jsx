@@ -42,7 +42,7 @@ function CambioRepresentanteLegal() {
   const handleOnClick = () => {
     if (option) {
       setMethod('POST');
-      setDataBody({ tipoSolicitudId: 5 });
+      setDataBody({ tipoSolicitudId: 4 });
       setUrl(`api/v1/solicitudes/${option}/cambioRepresentanteLegal`);
     }
   };

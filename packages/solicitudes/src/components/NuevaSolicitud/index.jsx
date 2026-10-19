@@ -209,8 +209,8 @@ export default function NuevaSolicitud({ type, solicitudId = '' }) {
     { id: 1, nombre: 'Nueva Solicitud' },
     { id: 2, nombre: 'Refrendo' },
     { id: 3, nombre: 'Cambio de Domicilio' },
-    { id: 4, nombre: 'Actualización' },
-    { id: 5, nombre: 'Cambio de Representante Legal' },
+    { id: 4, nombre: 'Cambio de Representante Legal' },
+    { id: 5, nombre: 'Actualización' },
     { id: 6, nombre: 'Cambio de nombre de Institución' },
   ];
 
