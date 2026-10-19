@@ -15,12 +15,12 @@ import {
   useUI,
 } from '@siiges-ui/shared';
 import PropTypes from 'prop-types';
-import alumnosService from '../utils/alumnosService';
+import alumnosService from '../../utils/alumnosService';
 import {
   ESTATUS_SERVICIO_SOCIAL,
   opcionesEstatusServicioSocial,
   TIPOS_DOCUMENTO_SERVICIO_SOCIAL,
-} from './servicioSocialUtils';
+} from '../servicioSocialUtils';
 
 export default function ServicioSocialInfo({ alumno, nivelId }) {
   const router = useRouter();
@@ -38,15 +38,17 @@ export default function ServicioSocialInfo({ alumno, nivelId }) {
     if (!alumno?.id) return undefined;
 
     const estatusGuardado = alumno.estatusServicioSocial;
-    setEstatusServicioSocial(
-      opcionesEstatus.some((option) => option.id === estatusGuardado)
-        ? estatusGuardado
-        : ESTATUS_SERVICIO_SOCIAL.PENDIENTE.id,
-    );
+    const noAplicaInvalido = estatusGuardado === ESTATUS_SERVICIO_SOCIAL.NO_APLICA.id
+      && nivelId !== null && nivelId !== undefined
+      && !opcionesEstatusServicioSocial(nivelId).some((option) => option.id === estatusGuardado);
+
+    setEstatusServicioSocial(noAplicaInvalido
+      ? ESTATUS_SERVICIO_SOCIAL.PENDIENTE.id
+      : (estatusGuardado ?? ESTATUS_SERVICIO_SOCIAL.PENDIENTE.id));
     setObservaciones(alumno.observacionesServicioSocial || '');
 
     return undefined;
-  }, [alumno]);
+  }, [alumno, nivelId]);
 
   const handleFileLoaded = useCallback((tipoDocumento, url) => {
     setFileURLs((prevURLs) => ({
