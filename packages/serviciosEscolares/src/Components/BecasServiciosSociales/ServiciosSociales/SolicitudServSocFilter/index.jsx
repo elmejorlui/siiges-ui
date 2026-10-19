@@ -6,7 +6,7 @@ import {
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import {
-  getInstituciones,
+  getInstitucionesOpciones,
   getPlantelesByInstitucion,
   getProgramas,
 } from '@siiges-ui/instituciones';
@@ -20,7 +20,7 @@ export default function SolicitudServSocFilter({
 }) {
   const { session } = useAuth();
   const { setNoti, setLoading } = useUI();
-  const { instituciones } = getInstituciones({
+  const { instituciones } = getInstitucionesOpciones({
     esNombreAutorizado: true,
     tipoInstitucionId: 1,
     setLoading,

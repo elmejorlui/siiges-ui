@@ -7,7 +7,7 @@ import {
 } from '@siiges-ui/shared';
 import PropTypes from 'prop-types';
 import {
-  getInstituciones,
+  getInstitucionesOpciones,
   getPlantelesByInstitucion,
   getProgramas,
 } from '@siiges-ui/instituciones';
@@ -16,7 +16,7 @@ import getInstitucionIdFromSession from '../../utils/getInstitucionId';
 export default function TitulosForm({
   setTitulos, setPrograma, setLoading, reloadFlag, modo, toggleModo,
 }) {
-  const { instituciones } = getInstituciones({
+  const { instituciones } = getInstitucionesOpciones({
     esNombreAutorizado: true,
     tipoInstitucionId: 1,
     setLoading,

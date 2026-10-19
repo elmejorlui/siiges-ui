@@ -1,6 +1,8 @@
 import { Grid } from '@mui/material';
 import PropTypes from 'prop-types';
-import { getInstituciones, getPlantelesByInstitucion, getProgramas } from '@siiges-ui/instituciones';
+import {
+  getInstitucionesOpciones, getPlantelesByInstitucion, getProgramas,
+} from '@siiges-ui/instituciones';
 import { Select, useAuth, useUI } from '@siiges-ui/shared';
 import React, { useState, useEffect } from 'react';
 import getInstitucionIdFromSession from '../../utils/getInstitucionId';
@@ -20,7 +22,7 @@ export default function ProgramasForm({ setProgramas, setLoading }) {
   const [planteles, setPlanteles] = useState([]);
   const [isPlantelesDisabled, setIsPlantelesDisabled] = useState(true);
 
-  const { instituciones } = getInstituciones({
+  const { instituciones } = getInstitucionesOpciones({
     esNombreAutorizado: true,
     tipoInstitucionId: 1,
     setLoading,

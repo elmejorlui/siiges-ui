@@ -8,12 +8,11 @@ import {
   getCiclosEscolares,
   getGrados,
   getGrupos,
-  getInstituciones,
+  getInstitucionesOpciones,
   getPlantelesByInstitucion,
   getProgramas,
 } from '@siiges-ui/instituciones';
 import getAsignaturas from '@siiges-ui/instituciones/src/utils/getAsignaturas';
-import CicloEscolarModal from './Modals/CicloEscolarModal';
 import GruposModal from '../../utils/GruposModal';
 import getInstitucionIdFromSession from '../../utils/getInstitucionId';
 
@@ -26,7 +25,7 @@ export default function InscripcionForm({
   setLoading,
   setCicloTxt,
 }) {
-  const { instituciones } = getInstituciones({
+  const { instituciones } = getInstitucionesOpciones({
     esNombreAutorizado: true,
     tipoInstitucionId: 1,
     setLoading,
