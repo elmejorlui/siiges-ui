@@ -38,7 +38,3 @@ export const getEstatusNombre = (estatusId) => {
     .find((option) => option.id === Number(estatusId));
   return estatus?.nombre || ESTATUS_SERVICIO_SOCIAL.PENDIENTE.nombre;
 };
-
-export const nombreDocumentoAdjunto = (documentos, tipoDocumento) => (
-  documentos?.[tipoDocumento] || null
-);

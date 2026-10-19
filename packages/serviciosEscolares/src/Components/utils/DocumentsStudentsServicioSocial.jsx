@@ -6,7 +6,6 @@ import { useUI } from '@siiges-ui/shared';
 import PropTypes from 'prop-types';
 import {
   TIPOS_DOCUMENTO_SERVICIO_SOCIAL,
-  nombreDocumentoAdjunto,
 } from '../ServicioSocialAlumnos/servicioSocialUtils';
 
 const DOCUMENTOS_LABELS = {
@@ -34,7 +33,7 @@ export default function DocumentsStudentsServicioSocial({ documentos }) {
   return (
     <Stack direction="row" spacing={1}>
       {TIPOS_DOCUMENTO_SERVICIO_SOCIAL.map((documento) => {
-        const ubicacion = nombreDocumentoAdjunto(documentos, documento.tipoDocumento);
+        const ubicacion = documentos?.[documento.tipoDocumento] || null;
         const nombre = ubicacion?.split('/').pop();
         return (
           <Tooltip

@@ -47,6 +47,12 @@ import AcreditacionAsignaturas from './Components/Acreditacion/AcreditacionAsign
 import ActionsAcreditacionAsignaturas from './Components/utils/ActionsAcreditacionAsignaturas';
 import ButtonsInstitucionesAutorizadas from './Components/utils/ButtonsInstitucionesAutorizadas';
 import ServicioSocialComponents from './Components/BecasServiciosSociales/ServiciosSociales/index';
+import ServicioSocialForm from './Components/ServicioSocialAlumnos/ServicioSocialForm/index';
+import ServicioSocialTable from './Components/ServicioSocialAlumnos/ServicioSocialTable/index';
+import ServicioSocialInfo from './Components/ServicioSocialAlumnos/ServicioSocialInfo/index';
+import ServicioSocialReportesForm from './Components/ServicioSocialAlumnos/Reportes/ServicioSocialReportesForm/index';
+import ServicioSocialReporteGeneral from './Components/ServicioSocialAlumnos/Reportes/ServicioSocialReporteGeneral/index';
+import ServicioSocialReporteInstitucion from './Components/ServicioSocialAlumnos/Reportes/ServicioSocialReporteInstitucion/index';
 import ReporteTable from './Components/Reporte/ReporteTable/index';
 import ReporteForm from './Components/Reporte/ReporteForm/index';
 import FormAlumnoTitulacion from './Components/Titulacion/FormAlumno/index';
@@ -138,6 +144,12 @@ export {
   ActionsAlumnosInscritos,
   AcreditacionAsignaturas,
   ServicioSocialComponents,
+  ServicioSocialForm,
+  ServicioSocialTable,
+  ServicioSocialInfo,
+  ServicioSocialReportesForm,
+  ServicioSocialReporteGeneral,
+  ServicioSocialReporteInstitucion,
   RevalidacionEquivalencias,
   ActionsAcreditacionAsignaturas,
   columnsInstitucionesAutorizadas,
