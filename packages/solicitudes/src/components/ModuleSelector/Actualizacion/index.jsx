@@ -46,7 +46,7 @@ function Actualizacion() {
   const handleOnClick = () => {
     if (option) {
       setMethod('POST');
-      setDataBody({ tipoSolicitudId: 4, rvoeAnteriorId: option });
+      setDataBody({ tipoSolicitudId: 5 });
       setUrl(`api/v1/solicitudes/${option}/actualizacion`);
     }
   };

@@ -43,7 +43,7 @@ function CambioRepresentanteLegal() {
     if (option) {
       setMethod('POST');
       setDataBody({ tipoSolicitudId: 6 });
-      setUrl(`api/v1/solicitudes/${option}/cambioRepresentanteLegal`);
+      setUrl(`api/v1/solicitudes/${option}/cambioNombreInstitucion`);
     }
   };
 
