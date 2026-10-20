@@ -1,23 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { Grid } from '@mui/material';
 import {
   ButtonSimple, Select, useApi, useAuth, useUI,
 } from '@siiges-ui/shared';
 
-function CambioRepresentanteLegal() {
+function CambioNombreInstitucion() {
   const { session } = useAuth();
   const { setNoti } = useUI();
   const { id } = session;
   const router = useRouter();
-  const [options, setOptions] = useState([]);
-  const [option, setOption] = useState('');
+  const [solicitudes, setSolicitudes] = useState([]);
+  const [institucionSelect, setInstitucionSelect] = useState('');
+  const [solicitudSelect, setSolicitudSelect] = useState('');
   const [url, setUrl] = useState('');
   const [dataBody, setDataBody] = useState('');
   const [method, setMethod] = useState('GET');
 
   const { data } = useApi({
-    endpoint: url || `api/v1/instituciones/usuarios/${id}`,
+    endpoint: url || `api/v1/solicitudes?estatusSolicitudId=11&usuarioId=${id}`,
     dataBody,
     method,
   });
@@ -25,38 +26,64 @@ function CambioRepresentanteLegal() {
   const showCrearSolicitud = process.env.NEXT_PUBLIC_SHOW_CREAR_SOLICITUD !== 'false';
 
   useEffect(() => {
-    if (data && !Array.isArray(data)) {
-      setOptions([{ id: data.id, nombre: data.nombre }]);
+    if (method === 'GET' && Array.isArray(data)) {
+      setSolicitudes(data);
     }
-    if (typeof data === 'object' && method === 'POST' && data) {
+    if (method === 'POST' && data && !Array.isArray(data)) {
       setNoti({ open: true, message: '¡Registro Exitoso!', type: 'success' });
       router.push({
         pathname: `/solicitudes/detallesSolicitudes/${data.id}/editarSolicitud`,
-        query: { solicitudType: 'Cambio de Representante Legal' },
+        query: { solicitudType: 'Cambio de Nombre de Institución' },
       }, `/solicitudes/detallesSolicitudes/${data.id}/editarSolicitud`);
     }
   }, [data]);
 
-  const handleOnChange = (e) => setOption(e.target.value);
+  const institucionOptions = useMemo(() => {
+    const map = new Map();
+    solicitudes.forEach(({ programa }) => {
+      const inst = programa?.plantel?.institucion;
+      if (inst) map.set(inst.id, { id: inst.id, nombre: inst.nombre });
+    });
+    return [...map.values()];
+  }, [solicitudes]);
+
+  const programaOptions = useMemo(() => solicitudes
+    .filter(({ programa }) => programa?.plantel?.institucion?.id === institucionSelect)
+    .map(({ id: solicitudId, folio, programa }) => ({
+      id: solicitudId,
+      nombre: `${programa.nombre} ${folio}`,
+    })), [solicitudes, institucionSelect]);
 
   const handleOnClick = () => {
-    if (option) {
+    if (solicitudSelect) {
       setMethod('POST');
       setDataBody({ tipoSolicitudId: 6 });
-      setUrl(`api/v1/solicitudes/${option}/cambioNombreInstitucion`);
+      setUrl(`api/v1/solicitudes/${solicitudSelect}/cambioNombreInstitucion`);
     }
   };
 
   return (
     <Grid item>
       <Grid container spacing={2}>
-        <Grid item xs={10}>
+        <Grid item xs={5}>
           <Select
-            title="Seleccione la Institución"
-            name="options"
-            options={options}
-            value={option}
-            onChange={handleOnChange}
+            title="Institución"
+            name="institucion"
+            options={institucionOptions}
+            value={institucionSelect}
+            onChange={(e) => {
+              setInstitucionSelect(e.target.value || '');
+              setSolicitudSelect('');
+            }}
+          />
+        </Grid>
+        <Grid item xs={5}>
+          <Select
+            title="Programa"
+            name="programa"
+            options={programaOptions}
+            value={solicitudSelect}
+            onChange={(e) => setSolicitudSelect(e.target.value || '')}
           />
         </Grid>
         <Grid item xs={2} sx={{ mt: 2, mb: 1 }}>
@@ -67,4 +94,4 @@ function CambioRepresentanteLegal() {
   );
 }
 
-export default CambioRepresentanteLegal;
+export default CambioNombreInstitucion;
