@@ -20,6 +20,14 @@ const FIELDS_TO_VALIDATE = [
   'gradoId', 'areaId', 'nombre', 'clave', 'creditos', 'horasDocente', 'horasIndependiente',
 ];
 
+const calcularCreditos = (horasDocente, horasIndependiente) => {
+  if (horasDocente === '' && horasIndependiente === '') return '';
+  if (horasDocente === undefined && horasIndependiente === undefined) return '';
+
+  const total = (Number(horasDocente) || 0) + (Number(horasIndependiente) || 0);
+  return (total / 16).toFixed(2);
+};
+
 export default function AsignaturasCreateModal({ open, hideModal, title }) {
   const {
     asignaturasList,
@@ -130,6 +138,17 @@ export default function AsignaturasCreateModal({ open, hideModal, title }) {
     }
   };
 
+  useEffect(() => {
+    const creditos = calcularCreditos(
+      formAsignaturas.horasDocente,
+      formAsignaturas.horasIndependiente,
+    );
+
+    if (creditos !== formAsignaturas.creditos) {
+      setFormAsignaturas((prevData) => ({ ...prevData, creditos }));
+    }
+  }, [formAsignaturas.horasDocente, formAsignaturas.horasIndependiente]);
+
   return (
     <DefaultModal open={open} setOpen={hideModal} title={title}>
       <Grid container spacing={2}>
@@ -189,11 +208,13 @@ export default function AsignaturasCreateModal({ open, hideModal, title }) {
             label="Créditos"
             name="creditos"
             auto="creditos"
+            value={formAsignaturas.creditos || ''}
             onChange={handleOnChange}
             onblur={handleOnBlur}
             onfocus={handleInputFocus}
             required
             errorMessage={error.creditos}
+            disabled
           />
         </Grid>
         <Grid item xs={12}>

@@ -20,11 +20,6 @@ export default function errorDatosGeneralesEvaluacion(form, setError, error) {
   const errors = {
     fecha: () => validateField('fecha', 'Fecha de dictamen inválida'),
     evaluadorId: () => validateField('evaluadorId', 'Evaluador inválido'),
-    numero: () => validateField(
-      'numero',
-      'Cumplimiento númerico inválido',
-      true,
-    ),
     valoracion: () => validateField('valoracion', 'Valoración cualitativa inválida'),
   };
 

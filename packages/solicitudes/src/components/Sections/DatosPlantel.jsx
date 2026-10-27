@@ -93,7 +93,7 @@ export default function DatosPlantel({
             label="Clave de centro de trabajo"
             name="claveCentroTrabajo"
             auto="claveCentroTrabajo"
-            value={plantelesData?.claveCentroTrabajo}
+            value={type === 'editar' ? '' : plantelesData?.claveCentroTrabajo}
             disabled={isDisabled}
           />
         </Grid>

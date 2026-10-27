@@ -33,8 +33,12 @@ const getStepName = (component) => componentSteps.find(
 )?.stepName || '';
 
 const buildSteps = (modalidad, tipoSolicitudId) => {
-  if ([5, 6].includes(tipoSolicitudId)) {
+  if ([6].includes(tipoSolicitudId)) {
     return [DatosGenerales];
+  }
+
+  if (tipoSolicitudId === 2) {
+    return [Anexos, EvaluacionCurricular];
   }
 
   const baseCommonSteps = [PlanEstudios, DatosGenerales, Plantel, Anexos];
@@ -247,6 +251,7 @@ export default function NuevaSolicitud({ type, solicitudId = '' }) {
         isEditOrView={type}
         type={getSolicitudTypeName()}
         date={displayDate}
+        rvoe={solicitud?.programa?.acuerdoRvoe}
         nextModule={nextModule}
         prevModule={prevModule}
         module={module}

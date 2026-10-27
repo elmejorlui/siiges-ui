@@ -20,6 +20,7 @@ export default function ModuleHeader({
   steps,
   type,
   date,
+  rvoe,
   prevModule,
   nextModule,
   module,
@@ -125,6 +126,16 @@ export default function ModuleHeader({
                 <span>&nbsp;</span>
               </Typography>
               <Typography variant="p">{date}</Typography>
+              {type !== 'Nueva solicitud' && (
+                <>
+                  <br />
+                  <Typography variant="p" sx={{ fontWeight: 'bold' }}>
+                    RVOE de origen:
+                    <span>&nbsp;</span>
+                  </Typography>
+                  <Typography variant="p">{rvoe}</Typography>
+                </>
+              )}
             </Grid>
           </Grid>
           <Grid container spacing={1} justifyContent="right">

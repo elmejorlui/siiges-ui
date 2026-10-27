@@ -37,6 +37,7 @@ const periodoOptionsBase = [
   { id: 3, nombre: 'Anual' },
   { id: 4, nombre: 'Semestral curriculum flexible' },
   { id: 5, nombre: 'Cuatrimestral curriculum flexible' },
+  { id: 5, nombre: 'Anual curriculum flexible' },
 ];
 
 const tipoCurriculaOptions = [
@@ -142,8 +143,8 @@ export default function DatosPlanEstudios({ disabled, type, tipoSolicitudId }) {
   const [tipoCurricula, setTipoCurricula] = useState('');
 
   const periodoOptions = useMemo(() => {
-    if (tipoCurricula === 1) return periodoOptionsBase.filter((p) => [1, 2].includes(p.id));
-    if (tipoCurricula === 2) return periodoOptionsBase.filter((p) => [4, 5].includes(p.id));
+    if (tipoCurricula === 1) return periodoOptionsBase.filter((p) => [1, 2, 3].includes(p.id));
+    if (tipoCurricula === 2) return periodoOptionsBase.filter((p) => [4, 5, 6].includes(p.id));
     return periodoOptionsBase;
   }, [tipoCurricula]);
 

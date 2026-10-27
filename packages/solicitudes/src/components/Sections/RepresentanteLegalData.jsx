@@ -1,6 +1,6 @@
 import { Grid, Typography } from '@mui/material';
 import {
-  GetFile, Input, InputFile, getCurrentUser,
+  GetFile, Input, InputFile,
 } from '@siiges-ui/shared';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
@@ -9,6 +9,7 @@ import BasicSelect from '@siiges-ui/shared/src/components/Select';
 import DatosGeneralesContext from '../utils/Context/datosGeneralesContext';
 import formDatosRepresentante from '../utils/sections/forms/formDatosRepresentante';
 import useSectionDisabled from './Hooks/useSectionDisabled';
+import getUsuarioById from '../utils/getUserById';
 
 function RepresentanteLegalData({ id, disabled }) {
   const {
@@ -16,7 +17,7 @@ function RepresentanteLegalData({ id, disabled }) {
   } = useContext(DatosGeneralesContext);
 
   const { municipios } = getMunicipios();
-  const { user } = getCurrentUser();
+  const { user } = getUsuarioById(solicitud?.usuarioId);
   const [fileUrl, setFileUrl] = useState();
   const fileData = {
     entidadId: solicitud.usuarioId,

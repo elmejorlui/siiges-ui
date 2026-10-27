@@ -13,7 +13,6 @@ import { useRouter } from 'next/router';
 import errorDatosGeneralesEvaluacion from '../utils/sections/errors/errorDatosGeneralesEvaluacion';
 import { useEvaluacionCurricular } from '../utils/Context/evaluacionCurricularContext';
 import getEvaluadores from '../utils/getEvaluadores';
-import useCumplimiento from '../utils/getCumplimiento';
 import getSolicitudesById from '../utils/getSolicitudesById';
 import useSectionDisabled from './Hooks/useSectionDisabled';
 
@@ -25,8 +24,8 @@ export default function DatosGeneralesEvaluacion({ disabled, id, type }) {
   const { solicitudes } = getSolicitudesById(id);
   const router = useRouter();
   const { query } = router;
-  const { cumplimiento } = useCumplimiento(form.modalidad, form.numero);
   const [url, setUrl] = useState('');
+  const [guiaUrl, setGuiaUrl] = useState('');
 
   const isSectionDisabled = useSectionDisabled(21);
 
@@ -43,7 +42,6 @@ export default function DatosGeneralesEvaluacion({ disabled, id, type }) {
         modalidad: modalidadSource,
         id: solicitudes.programa.evaluacion.id,
         evaluadorId: solicitudes.programa.evaluacion.evaluadorId,
-        numero: solicitudes.programa.evaluacion.numero,
         valoracion: solicitudes.programa.evaluacion.valoracion,
         fecha: solicitudes.programa.evaluacion.fecha,
       }));
@@ -61,6 +59,13 @@ export default function DatosGeneralesEvaluacion({ disabled, id, type }) {
         tipoDocumento: 'DICTAMEN_EVALUACION',
       };
       GetFile(fileData, setUrl);
+
+      const guiaData = {
+        entidadId: form.programaId,
+        tipoEntidad: 'PROGRAMA',
+        tipoDocumento: 'GUIA_EVALUACION',
+      };
+      GetFile(guiaData, setGuiaUrl);
     }
   }, [type, solicitudes, form.programaId, query]);
 
@@ -90,13 +95,6 @@ export default function DatosGeneralesEvaluacion({ disabled, id, type }) {
   useEffect(() => {
     if (validation !== undefined) {
       setErrors(validation);
-    }
-    if (cumplimiento) {
-      setForm((prevForm) => ({
-        ...prevForm,
-        cumplimientoId: cumplimiento.id,
-        porcentajeCumplimiento: cumplimiento.porcentajeCumplimiento,
-      }));
     }
   }, [error]);
 
@@ -142,40 +140,6 @@ export default function DatosGeneralesEvaluacion({ disabled, id, type }) {
             required
           />
         </Grid>
-        <Grid item xs={3}>
-          <InputNumber
-            id="numero"
-            label="Cumplimiento numérico"
-            name="numero"
-            value={form.numero}
-            onChange={handleOnChange}
-            onblur={handleOnBlur}
-            onfocus={handleInputFocus}
-            errorMessage={error.numero}
-            min={50}
-            max={250}
-            disabled={isDisabled}
-            required
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <Input
-            id="porcentaje"
-            label="Porcentaje"
-            name="porcentaje"
-            value={cumplimiento?.porcentajeCumplimiento}
-            disabled
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <Input
-            id="calificacion"
-            label="Calificación"
-            name="calificacion"
-            value={cumplimiento?.nombre}
-            disabled
-          />
-        </Grid>
         <Grid item xs={12}>
           <Input
             id="valoracion"
@@ -202,6 +166,18 @@ export default function DatosGeneralesEvaluacion({ disabled, id, type }) {
             tipoDocumento="DICTAMEN_EVALUACION"
             url={url}
             setUrl={setUrl}
+            disabled={isDisabled}
+            required
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <InputFile
+            id={form.programaId}
+            label="Guía de evaluación"
+            tipoEntidad="PROGRAMA"
+            tipoDocumento="GUIA_EVALUACION"
+            url={guiaUrl}
+            setUrl={setGuiaUrl}
             disabled={isDisabled}
             required
           />

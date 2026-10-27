@@ -27,6 +27,8 @@ const columns = (grados, isDisabled, type) => {
     { field: 'clave', headerName: 'Clave', width: 100 },
     { field: 'seriacion', headerName: 'Seriación', width: 300 },
     { field: 'creditos', headerName: 'Créditos' },
+    { field: 'horasDocente', headerName: 'Horas Docente' },
+    { field: 'horasIndependiente', headerName: 'Horas Independiente' },
     {
       field: 'actions',
       headerName: 'Acciones',

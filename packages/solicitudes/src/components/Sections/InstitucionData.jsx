@@ -12,10 +12,18 @@ function InstitucionData({ id, disabled }) {
   } = useContext(DatosGeneralesContext);
 
   const [fileUrl, setFileUrl] = useState();
+  const [justificacionUrl, setJustificacionUrl] = useState();
+
   const fileData = {
     entidadId: id,
     tipoEntidad: 'INSTITUCION',
     tipoDocumento: 'LOGOTIPO',
+  };
+
+  const justificacionData = {
+    entidadId: id,
+    tipoEntidad: 'INSTITUCION',
+    tipoDocumento: 'JUSTIFICACION_NOMBRE',
   };
 
   const isSectionDisabled = useSectionDisabled(11);
@@ -27,6 +35,7 @@ function InstitucionData({ id, disabled }) {
       setDisabled(false);
     }
     GetFile(fileData, setFileUrl);
+    GetFile(justificacionData, setJustificacionUrl);
   }, [id]);
 
   const handleOnChange = (e) => {
@@ -126,6 +135,17 @@ function InstitucionData({ id, disabled }) {
             label="Logo de la institución"
             url={fileUrl}
             setUrl={setFileUrl}
+            disabled={isDisabled}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <InputFile
+            tipoEntidad="INSTITUCION"
+            tipoDocumento="JUSTIFICACION_NOMBRE"
+            id={id}
+            label="Justificación de nombre"
+            url={justificacionUrl}
+            setUrl={setJustificacionUrl}
             disabled={isDisabled}
           />
         </Grid>
